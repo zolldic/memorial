@@ -40,11 +40,11 @@ function RootContent() {
                 onClick={toggleLang}
                 className="flex items-center gap-2 border-2 border-border px-4 py-2 font-mono text-xs uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
               >
-                <Globe size={20} strokeWidth={1.5} />
+                <Globe size={20} strokeWidth={1.5} aria-hidden="true" />
                 {lang === "en" ? t("switchLanguageArabic") : t("switchLanguageEnglish")}
               </button>
-              <Link to="/search" className="p-2 border-2 border-transparent hover:border-border transition-all duration-500 ease-out">
-                <Search size={20} strokeWidth={1.5} />
+              <Link to="/search" aria-label="Search the archive" className="p-2 border-2 border-transparent hover:border-border transition-all duration-500 ease-out">
+                <Search size={20} strokeWidth={1.5} aria-hidden="true" />
               </Link>
             </div>
 
@@ -68,9 +68,11 @@ function RootContent() {
               </div>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={menuOpen}
                 className="p-3 min-w-[44px] min-h-[44px] border-2 border-border bg-background hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
               >
-                {menuOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
+                {menuOpen ? <X size={24} strokeWidth={1.5} aria-hidden="true" /> : <Menu size={24} strokeWidth={1.5} aria-hidden="true" />}
               </button>
             </div>
           </div>

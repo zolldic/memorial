@@ -7,6 +7,7 @@ import { useMartyrDetail } from '@/features/martyrs/hooks/useMartyrDetail';
 import { MartyrProfile } from '@/features/martyrs/components/MartyrProfile';
 import { TributeWall } from '@/features/martyrs/components/TributeWall';
 import { MemorialSection } from '@/features/martyrs/components/MemorialSection';
+import { toast } from 'sonner';
 
 export function MartyrDetail() {
   const { lang } = useLanguage();
@@ -21,6 +22,22 @@ export function MartyrDetail() {
     if (!candleLit) {
       setOptimisticCandles(1);
       setCandleLit(true);
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = lang === 'en' ? martyr?.nameEn : martyr?.nameAr;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: title || 'Memorial', url });
+      } catch {
+        // User cancelled share dialog
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast.success(t('martyrPage.linkCopied', { defaultValue: 'Link copied to clipboard!' }));
     }
   };
 
@@ -62,12 +79,20 @@ export function MartyrDetail() {
           {t("martyrPage.returnToArchives")}
         </Link>
         <div className="flex gap-4">
-          <button className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3">
-            <Share2 size={16} strokeWidth={1.5} />
+          <button
+            onClick={handleShare}
+            aria-label={t('martyrPage.shareProfile', { defaultValue: 'Share this profile' })}
+            className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
+          >
+            <Share2 size={16} strokeWidth={1.5} aria-hidden="true" />
           </button>
-          <button onClick={() => window.print()} className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3">
-            <Printer size={16} strokeWidth={1.5} />
-          </button>
+{/*           <button
+            onClick={() => window.print()}
+            aria-label={t('martyrPage.printProfile', { defaultValue: 'Print this profile' })}
+            className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
+          >
+            <Printer size={16} strokeWidth={1.5} aria-hidden="true" />
+          </button> */}
         </div>
       </div>
 
