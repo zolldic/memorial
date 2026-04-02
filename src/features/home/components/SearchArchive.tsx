@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,7 @@ export function SearchArchive({
   yearChips,
 }: SearchArchiveProps) {
   const { t } = useTranslation("home");
+  const navigate = useNavigate();
 
   return (
     <section className="py-16 md:py-24 border-t-4 border-border texture-noise">
@@ -40,7 +41,7 @@ export function SearchArchive({
           onSubmit={(e) => {
             e.preventDefault();
             if (searchQuery.trim()) {
-              window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+              navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
             }
           }}
           className="relative max-w-xl mx-auto mb-8"
