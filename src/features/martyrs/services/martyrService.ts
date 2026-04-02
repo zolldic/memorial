@@ -26,16 +26,17 @@ export const martyrService = {
 
   searchMartyrs: async (query: string): Promise<Martyr[]> => {
     await delay(400);
+    if (!query.trim()) return martyrsData;
+    
     const q = query.toLowerCase();
-    if (!q) return martyrsData;
     
     return martyrsData.filter((m) =>
       m.nameEn.toLowerCase().includes(q) ||
-      m.nameAr.toLowerCase().includes(q) ||
+      m.nameAr.includes(query) ||  // Arabic: use original query, no toLowerCase
       m.locationEn.toLowerCase().includes(q) ||
-      m.locationAr.toLowerCase().includes(q) ||
+      m.locationAr.includes(query) ||  // Arabic: use original query
       m.storyEn.toLowerCase().includes(q) ||
-      m.storyAr.toLowerCase().includes(q)
+      m.storyAr.includes(query)  // Arabic: use original query
     );
   },
 };

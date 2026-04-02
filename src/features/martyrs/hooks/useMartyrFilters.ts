@@ -16,9 +16,9 @@ export function useMartyrFilters(initialMartyrs: Martyr[] = []) {
     return initialMartyrs.filter((m) => {
       const q = searchQuery.toLowerCase();
       const matchesSearch =
-        !q ||
+        !searchQuery ||
         m.nameEn.toLowerCase().includes(q) ||
-        m.nameAr.includes(q);
+        m.nameAr.includes(searchQuery);  // Arabic: use original searchQuery, not q
 
       const matchesYear = !yearFilter || m.dateOfMartyrdom.startsWith(yearFilter);
       
