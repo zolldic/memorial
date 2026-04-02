@@ -17,5 +17,10 @@
   "nonProfitFreeArchive": "غير ربحي · مجاني · أرشيف مفتوح مخصص لتوثيق حقوق الإنسان.",
   "switchLanguageArabic": "العربية",
   "switchLanguageEnglish": "English",
-  "copyright": "© 2026 Sudan Martyr Archive. All Rights Reserved."
+  "copyright": "© 2026 Sudan Martyr Archive. All Rights Reserved.",
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "message": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. يرجى العودة إلى الأرشيف.",
+    "backHome": "العودة للرئيسية"
+  }
 }

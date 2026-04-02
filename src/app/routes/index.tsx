@@ -7,6 +7,7 @@ import { WorkWithUs } from "@/features/core/pages/WorkWithUs";
 import { MartyrsList } from "@/features/martyrs/pages/MartyrsList";
 import { MartyrDetail } from "@/features/martyrs/pages/MartyrDetail";
 import { ShareMemory } from "@/features/memories/pages/ShareMemory";
+import { NotFound } from "@/features/core/components/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { path: "martyrs", Component: MartyrsList },
       { path: "martyrs/:id", Component: MartyrDetail },
       { path: "share", Component: ShareMemory },
+      { path: "*", Component: NotFound },
     ],
   },
 ]);

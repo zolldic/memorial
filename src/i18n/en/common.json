@@ -17,5 +17,10 @@
   "nonProfitFreeArchive": "Non-profit · Free · Open archive dedicated to human rights documentation.",
   "switchLanguageArabic": "العربية",
   "switchLanguageEnglish": "English",
-  "copyright": "© 2026 Sudan Martyr Archive. All Rights Reserved."
+  "copyright": "© 2026 Sudan Martyr Archive. All Rights Reserved.",
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "The page you are looking for does not exist or has been moved. Please return to the archive.",
+    "backHome": "Back to Home"
+  }
 }
