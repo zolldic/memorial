@@ -1,9 +1,10 @@
 import { Check } from 'lucide-react';
 import { useLanguage } from '@/app/providers/LanguageProvider';
 import { useTranslation } from 'react-i18next';
+import { Martyr } from '@/shared/types';
 
 interface Props {
-  selectedMartyr: any;
+  selectedMartyr: Martyr | undefined;
   resetForm: () => void;
 }
 
