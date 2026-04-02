@@ -1,14 +1,4 @@
-export interface Memory {
-  id: string;
-  martyrId: string;
-  authorName: string;
-  relationship: "family" | "friend" | "stranger";
-  type: "story" | "photo" | "voice";
-  contentEn: string;
-  contentAr: string;
-  date: string;
-  approved: boolean;
-}
+import { Memory } from '@/shared/types';
 
 // Mock approved memories for display
 export const mockMemories: Memory[] = [

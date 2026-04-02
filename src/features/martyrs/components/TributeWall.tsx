@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 import { User, Users, Eye } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { Memory } from "@/shared/data/memories";
+import { Memory } from "@/shared/types";
 
 interface TributeWallProps {
   martyrId: string;

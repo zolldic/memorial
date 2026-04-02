@@ -1,7 +1,6 @@
 import { martyrsData } from "@/shared/data/martyrs";
 import { mockMemories } from "@/shared/data/memories";
-import { Martyr } from "@/shared/types";
-import { Memory } from "@/shared/data/memories";
+import { Martyr, Memory } from "@/shared/types";
 
 // Simulating API delay for a better "loading" experience and to prepare for real APIs
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
