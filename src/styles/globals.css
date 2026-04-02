@@ -1,0 +1,302 @@
+/* Minimalist Monochrome Design System — Memorial */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Monochrome Palette — absolute */
+  --background: #FAFAFA;
+  --foreground: #0A0A0A;
+  --muted: #F5F5F5;
+  --muted-foreground: #525252;
+  --accent: #0A0A0A;
+  --accent-foreground: #FAFAFA;
+  --border: #0A0A0A;
+  --border-light: #E5E5E5;
+  --card: #FAFAFA;
+  --card-foreground: #0A0A0A;
+  --ring: #0A0A0A;
+  --input: transparent;
+
+  --primary: #0A0A0A;
+  --primary-foreground: #FAFAFA;
+  --secondary: #F5F5F5;
+  --secondary-foreground: #000000;
+
+  /* Font Families */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-arabic-serif: 'Amiri', serif;
+  --font-arabic-mono: 'IBM Plex Sans Arabic', sans-serif;
+
+  /* Zero radius — non-negotiable */
+  --font-size: 16px;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+
+  --font-family-serif: var(--font-serif);
+  --font-family-body: var(--font-body);
+  --font-family-mono: var(--font-mono);
+  --font-family-arabic-serif: var(--font-arabic-serif);
+  --font-family-arabic-mono: var(--font-arabic-mono);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    border-radius: 0px !important;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ——— Arabic (RTL) Typography Overrides ——— */
+/* Body & Standard reading text */
+[dir="rtl"] body,
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] a,
+[dir="rtl"] li,
+[dir="rtl"] td,
+[dir="rtl"] th,
+[dir="rtl"] .font-body {
+  font-family: var(--font-arabic-serif);
+  line-height: 1.8;
+}
+
+/* Titles */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] .font-serif {
+  font-family: var(--font-arabic-serif);
+  letter-spacing: 0;          /* Arabic does not use letter-spacing */
+}
+
+/* UI Elements, Buttons, Metadata */
+[dir="rtl"] h4,
+[dir="rtl"] label,
+[dir="rtl"] button,
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select,
+[dir="rtl"] .font-mono {
+  font-family: var(--font-arabic-mono);
+  letter-spacing: 0;
+  text-transform: none;       /* Arabic has no uppercase */
+}
+
+/* Preserve tracking-widest style visually but remove letter-spacing for Arabic */
+[dir="rtl"] [class*="tracking-"] {
+  letter-spacing: 0 !important;
+}
+
+/* ——— Texture Overlays ——— */
+@layer utilities {
+  /* Paper-like noise — apply to body or section wrappers */
+  .texture-noise {
+    position: relative;
+  }
+  .texture-noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+  }
+
+  /* Horizontal line texture for white sections */
+  .texture-lines {
+    position: relative;
+  }
+  .texture-lines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      #000 1px,
+      #000 2px
+    );
+    background-size: 100% 4px;
+    opacity: 0.015;
+  }
+
+  /* Grid texture for editorial sections */
+  .texture-grid {
+    position: relative;
+  }
+  .texture-grid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      linear-gradient(#00000008 1px, transparent 1px),
+      linear-gradient(90deg, #00000008 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Vertical lines for inverted (black bg) sections */
+  .texture-lines-inverted {
+    position: relative;
+  }
+  .texture-lines-inverted::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 1px,
+      #fff 1px,
+      #fff 2px
+    );
+    background-size: 4px 100%;
+    opacity: 0.03;
+  }
+
+  /* Radial glow for inverted CTA sections */
+  .texture-radial-inverted {
+    position: relative;
+  }
+  .texture-radial-inverted::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: radial-gradient(circle at top center, #ffffff, transparent 70%);
+    opacity: 0.05;
+  }
+
+  /* Font family utilities */
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* ——— Typography Defaults ——— */
+@layer base {
+  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+    h1 {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      color: var(--foreground);
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--foreground);
+    }
+
+    h3 {
+      font-family: var(--font-serif);
+      font-size: 1.875rem;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--foreground);
+    }
+
+    h4 {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-foreground);
+    }
+
+    p {
+      font-family: var(--font-body);
+      font-size: 1.125rem;
+      font-weight: 400;
+      line-height: 1.625;
+      color: var(--foreground);
+    }
+
+    label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-foreground);
+    }
+
+    button {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    input {
+      font-family: var(--font-body);
+      font-size: 1.125rem;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
