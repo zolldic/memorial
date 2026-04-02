@@ -1,0 +1,33 @@
+{
+  "name": "Memorial Website for Martyrs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tanstack/react-query": "^5.95.2",
+    "i18next": "^26.0.3",
+    "lucide-react": "^0.487.0",
+    "motion": "*",
+    "prop-types": "^15.8.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.2",
+    "react-responsive-masonry": "*",
+    "react-router": "*",
+    "sonner": "^2.0.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.12",
+    "@types/node": "^20.10.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.7.0",
+    "tailwindcss": "4.1.12",
+    "vite": "6.3.5"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "i18n:validate": "node scripts/validate-i18n.mjs"
+  }
+}
