@@ -1,0 +1,13 @@
+{
+  "title": "Search Results",
+  "archiveSearch": "Archive Search",
+  "refineSearch": "Refine Search",
+  "activeFilters": "Active Filters:",
+  "recordsFound": "Records Found",
+  "noRecordsFound": "No Records Found",
+  "noResultsMessage": "The archive search returned no results matching your criteria. Please adjust your search parameters.",
+  "clearAllFilters": "Clear All Filters",
+  "profileNo": "Profile No.",
+  "age": "Age",
+  "years": "years"
+}
