@@ -1,15 +1,7 @@
 import { Link } from 'react-router';
 import { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-interface Martyr {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  image: string;
-  professionEn: string;
-  professionAr: string;
-}
+import { Martyr } from '@/shared/types';
 
 interface WallOfFacesProps {
   lang: string;

@@ -1,17 +1,6 @@
 import { Link } from 'react-router';
 import { MapPin, Flame } from 'lucide-react';
-
-interface Martyr {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  image: string;
-  professionEn: string;
-  professionAr: string;
-  locationEn: string;
-  locationAr: string;
-  candles: number;
-}
+import { Martyr } from '@/shared/types';
 
 interface MartyrCardProps {
   martyr: Martyr;

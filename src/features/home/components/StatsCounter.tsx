@@ -1,8 +1,5 @@
 import { useTranslation } from 'react-i18next';
-
-interface Martyr {
-  id: string;
-}
+import { Martyr } from '@/shared/types';
 
 interface StatsCounterProps {
   martyrsData: Martyr[];

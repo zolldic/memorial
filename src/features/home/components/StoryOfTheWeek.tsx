@@ -1,22 +1,7 @@
 import { Link } from 'react-router';
 import { LucideIcon, MapPin, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-interface Martyr {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  image: string;
-  professionEn: string;
-  professionAr: string;
-  locationEn: string;
-  locationAr: string;
-  candles: number;
-  age: number;
-  dateOfMartyrdom: string;
-  storyEn: string;
-  storyAr: string;
-}
+import { Martyr } from '@/shared/types';
 
 interface StoryOfTheWeekProps {
   lang: string;
