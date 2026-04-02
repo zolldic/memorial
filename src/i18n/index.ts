@@ -2,7 +2,17 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 export const supportedLanguages = ["en", "ar"] as const;
-export const namespaces = ["common", "home", "dashboard"] as const;
+export const namespaces = [
+  "about",
+  "common",
+  "contribute",
+  "dashboard",
+  "home",
+  "martyrPage",
+  "martyrsList",
+  "searchResults",
+  "shareMemory",
+] as const;
 
 const namespaceLoaders = import.meta.glob("./*/*.json");
 
