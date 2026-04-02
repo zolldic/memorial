@@ -36,7 +36,7 @@ export function FilterBar({
   const [showAdvanced, setShowAdvanced] = React.useState(false);
 
   React.useEffect(() => {
-    if (yearFilter !== 'all' || monthFilter !== 'all' || stateFilter !== 'all') {
+    if (yearFilter !== '' || monthFilter !== '' || stateFilter !== '') {
       setShowAdvanced(true);
     }
   }, [yearFilter, monthFilter, stateFilter]);
