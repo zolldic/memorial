@@ -4,6 +4,7 @@ export type MemoryType = "story" | "photo" | "voice";
 
 export type Relationship = "family" | "friend" | "stranger";
 
+
 export interface Memory {
   id: string;
   martyrId: string;
@@ -30,4 +31,9 @@ export interface Martyr {
   professionEn: string;
   professionAr: string;
   candles: number;
+
+  name: Record<string, string>;
+  location: Record<string, string>;
+  story: Record<string, string>;
+  profession: Record<string, string>;
 }

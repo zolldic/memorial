@@ -3,182 +3,37 @@ import { Martyr } from "@/shared/types";
 export const martyrsData: Martyr[] = [
 {
   id: "1",
-  nameEn: "Abubakr Moatasem Ismail",
-  nameAr: "أبوبكر معتصم إسماعيل",
   age: 22,
   dateOfMartyrdom: "2022-07-21",
-  locationEn: "Omdurman",
-  locationAr: "أم درمان 0",
   image: "/1.jpeg",
+  candles: 0,
+
+  name: {
+    en: "Abubakr Moatasem Ismail",
+    ar: "أبوبكر معتصم إسماعيل"
+  },
+  location: {
+    en: "Omdurman",
+    ar: "أم درمان"
+  },
+  story: {
+    en: "On July 21, 2022, during a demonstration at Az-Zuhri Square, Abubakr Moatasem Ismail was shot in the chest and martyred at the age of 22. Known among friends as 'Ghaimah,' he was more than a participant; he was a light spirit amid hardship, always smiling and uplifting others. He carried simple yet profound dreams: to impact his country's economy, even by 1%. Brave in the face of danger, he protected others and remained present in both struggles and small moments, offering laughter, support, and humanity.",
+    ar: "في يوم 21 يوليو 2022، وأثناء موكب في صينية الأزهري، أُصيب أبوبكر معتصم إسماعيل برصاصة في الصدر، ليرتقي شهيدًا وهو في الثانية والعشرين من عمره. عرفه أصدقاؤه باسم 'غيمة'، وكان أكثر من مجرد مشارك؛ كان روحًا خفيفة وسط القسوة، مبتسمًا دائمًا ويرفع من معنويات من حوله. كان يحمل أحلامًا بسيطة لكنها عميقة: أن يؤثر في اقتصاد بلده بنسبة 1%. شجاعًا في مواجهة الخطر، كان يحمي الآخرين، ويشارك في الصعاب والتفاصيل الصغيرة، مقدمًا الضحكة والدعم والإنسانية."
+  },
+  profession: {
+    en: "Student",
+    ar: "طالب"
+  },
+
+  nameEn: "Abubakr Moatasem Ismail",
+  nameAr:  "أبوبكر معتصم إسماعيل",
+
+  locationEn: "Omdurman",
+  locationAr: "أم درمان",
   storyEn: "On July 21, 2022, during a demonstration at Az-Zuhri Square, Abubakr Moatasem Ismail was shot in the chest and martyred at the age of 22. Known among friends as 'Ghaimah,' he was more than a participant; he was a light spirit amid hardship, always smiling and uplifting others. He carried simple yet profound dreams: to impact his country's economy, even by 1%. Brave in the face of danger, he protected others and remained present in both struggles and small moments, offering laughter, support, and humanity.",
   storyAr: "في يوم 21 يوليو 2022، وأثناء موكب في صينية الأزهري، أُصيب أبوبكر معتصم إسماعيل برصاصة في الصدر، ليرتقي شهيدًا وهو في الثانية والعشرين من عمره. عرفه أصدقاؤه باسم 'غيمة'، وكان أكثر من مجرد مشارك؛ كان روحًا خفيفة وسط القسوة، مبتسمًا دائمًا ويرفع من معنويات من حوله. كان يحمل أحلامًا بسيطة لكنها عميقة: أن يؤثر في اقتصاد بلده بنسبة 1%. شجاعًا في مواجهة الخطر، كان يحمي الآخرين، ويشارك في الصعاب والتفاصيل الصغيرة، مقدمًا الضحكة والدعم والإنسانية.",
   professionEn: "Student",
   professionAr: "طالب",
-  candles: 1
-},
-  /* {
-    id: "2",
-    nameEn: "Sara Hassan",
-    nameAr: "سارة حسن",
-    age: 21,
-    dateOfMartyrdom: "2021-11-17",
-    locationEn: "Omdurman",
-    locationAr: "أم درمان",
-    image: "https://images.unsplash.com/photo-1616076875393-11b49fa6468d?auto=format&fit=crop&q=80&w=600",
-    storyEn: "A medical student and first-responder, Sara bravely treated wounded protestors at the front lines. She was known for her brilliant smile and her aspiration to open a free clinic for the impoverished. She carried a first-aid kit everywhere, even when she wasn't on duty.",
-    storyAr: "طالبة طب ومسعفة، عالجت سارة المتظاهرين الجرحى بشجاعة في الصفوف الأمامية. كانت معروفة بابتسامتها المشرقة وطموحها لفتح عيادة مجانية للفقراء. كانت تحمل حقيبة إسعافات أولية في كل مكان، حتى عندما لم تكن في الخدمة.",
-    professionEn: "Medical Student",
-    professionAr: "طالبة طب",
-    candles: 512
-  },
-  {
-    id: "3",
-    nameEn: "Mohamed Tariq",
-    nameAr: "محمد طارق",
-    age: 28,
-    dateOfMartyrdom: "2019-06-03",
-    locationEn: "Khartoum, General Command",
-    locationAr: "الخرطوم، القيادة العامة",
-    image: "https://images.unsplash.com/photo-1660057873647-882398b8ec1f?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Mohamed was a graphic designer who created many of the iconic revolution banners and murals. He envisioned a Sudan where art could freely express the people's will. His designs became symbols of hope, shared across social media and printed on the walls of Khartoum.",
-    storyAr: "كان محمد مصمم جرافيك صمم العديد من لافتات وجداريات الثورة الأيقونية. كان يتخيل سودانًا يمكن للفن فيه أن يعبر بحرية عن إرادة الشعب. أصبحت تصاميمه رموزًا للأمل، تُشارك عبر وسائل التواصل الاجتماعي وتُطبع على جدران الخرطوم.",
-    professionEn: "Graphic Designer",
-    professionAr: "مصمم جرافيك",
-    candles: 289
-  },
-  {
-    id: "4",
-    nameEn: "Hiba Ali",
-    nameAr: "هبة علي",
-    age: 19,
-    dateOfMartyrdom: "2022-01-30",
-    locationEn: "Bahri",
-    locationAr: "بحري",
-    image: "https://images.unsplash.com/photo-1658525914952-c02cbe697dc8?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Hiba was an artist who painted murals on the streets of Bahri. Her vibrant colors stood in defiance of the gray reality. She hoped to see a peaceful, civilian-led transition. Her final mural depicted a phoenix rising from the Nile.",
-    storyAr: "كانت هبة فنانة رسمت الجداريات في شوارع بحري. وقفت ألوانها النابضة بالحياة في تحدٍ للواقع الرمادي. كانت تأمل في رؤية انتقال سلمي بقيادة مدنية. جداريتها الأخيرة صورت طائر الفينيق يرتفع من النيل.",
-    professionEn: "Artist",
-    professionAr: "فنانة",
-    candles: 198
-  },
-  {
-    id: "5",
-    nameEn: "Omer Ibrahim",
-    nameAr: "عمر إبراهيم",
-    age: 32,
-    dateOfMartyrdom: "2018-12-19",
-    locationEn: "Atbara",
-    locationAr: "عطبرة",
-    image: "https://images.unsplash.com/photo-1647196772907-cc0b2cc741cf?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Omer was a teacher in Atbara who ignited the first sparks of the protests. He cared deeply for his students and believed that education was the key to liberation. He organized the first marches in his city, calling for bread, freedom, and justice.",
-    storyAr: "كان عمر مدرسًا في عطبرة أشعل الشرارات الأولى للاحتجاجات. كان يهتم بصدق بطلابه ويعتقد أن التعليم هو مفتاح التحرير. نظم أولى المسيرات في مدينته، مطالبًا بالخبز والحرية والعدالة.",
-    professionEn: "Teacher",
-    professionAr: "معلم",
-    candles: 423
-  },
-  {
-    id: "6",
-    nameEn: "Amira Khalil",
-    nameAr: "أميرة خليل",
-    age: 26,
-    dateOfMartyrdom: "2019-04-06",
-    locationEn: "Khartoum",
-    locationAr: "الخرطوم",
-    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Amira was a pharmacist who volunteered at makeshift clinics during the sit-in. She distributed medicine to wounded protestors and organized supply chains from neighboring pharmacies. Her compassion was legendary among those at the barricades.",
-    storyAr: "كانت أميرة صيدلانية تطوعت في العيادات المؤقتة أثناء الاعتصام. وزعت الأدوية على المتظاهرين الجرحى ونظمت سلاسل الإمداد من الصيدليات المجاورة. كان تعاطفها أسطوريًا بين المتواجدين عند المتاريس.",
-    professionEn: "Pharmacist",
-    professionAr: "صيدلانية",
-    candles: 156
-  },
-  {
-    id: "7",
-    nameEn: "Yousif Abdalla",
-    nameAr: "يوسف عبدالله",
-    age: 22,
-    dateOfMartyrdom: "2019-06-03",
-    locationEn: "Khartoum, General Command",
-    locationAr: "الخرطوم، القيادة العامة",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Yousif was a law student who dreamed of becoming a human rights lawyer. He documented abuses during the protests and helped organize legal aid for detained activists. His journals and recordings remain an invaluable archive of the revolution.",
-    storyAr: "كان يوسف طالب قانون يحلم بأن يصبح محاميًا لحقوق الإنسان. وثق الانتهاكات خلال الاحتجاجات وساعد في تنظيم المساعدة القانونية للناشطين المحتجزين. تبقى مذكراته وتسجيلاته أرشيفًا لا يقدر بثمن للثورة.",
-    professionEn: "Law Student",
-    professionAr: "طالب قانون",
-    candles: 278
-  },
-  {
-    id: "8",
-    nameEn: "Fatima Osman",
-    nameAr: "فاطمة عثمان",
-    age: 35,
-    dateOfMartyrdom: "2021-11-17",
-    locationEn: "Khartoum",
-    locationAr: "الخرطوم",
-    image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Fatima was a doctor at Khartoum Teaching Hospital who refused to leave her post during the crackdowns. She treated hundreds of injured protestors, often working through the night. Her colleagues called her 'the heart of the hospital.'",
-    storyAr: "كانت فاطمة طبيبة في مستشفى الخرطوم التعليمي رفضت مغادرة موقعها أثناء حملات القمع. عالجت مئات المتظاهرين المصابين، وغالبًا ما عملت طوال الليل. أطلق عليها زملاؤها لقب 'قلب المستشفى'.",
-    professionEn: "Doctor",
-    professionAr: "طبيبة",
-    candles: 601
-  },
-  {
-    id: "9",
-    nameEn: "Khalid Mustafa",
-    nameAr: "خالد مصطفى",
-    age: 17,
-    dateOfMartyrdom: "2019-07-29",
-    locationEn: "El-Obeid",
-    locationAr: "الأبيض",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Khalid was a high school student who joined the protests alongside his classmates in El-Obeid. He was one of the youngest martyrs of the revolution. His school friends planted a tree in his memory in the schoolyard.",
-    storyAr: "كان خالد طالبًا في المرحلة الثانوية انضم إلى الاحتجاجات مع زملائه في الأبيض. كان من أصغر شهداء الثورة. زرع أصدقاؤه في المدرسة شجرة في ذكراه في ساحة المدرسة.",
-    professionEn: "Student",
-    professionAr: "طالب",
-    candles: 734
-  },
-  {
-    id: "10",
-    nameEn: "Nisreen Abdel-Rahman",
-    nameAr: "نسرين عبدالرحمن",
-    age: 29,
-    dateOfMartyrdom: "2022-06-30",
-    locationEn: "Omdurman",
-    locationAr: "أم درمان",
-    image: "https://images.unsplash.com/photo-1611432579699-484f7990b127?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Nisreen was a journalist who documented the revolution through her camera lens. She believed the world needed to see what was happening in Sudan. Her photographs were published internationally and brought global attention to the cause.",
-    storyAr: "كانت نسرين صحفية وثقت الثورة من خلال عدسة كاميرتها. كانت تؤمن أن العالم بحاجة لرؤية ما يحدث في السودان. نُشرت صورها دوليًا وجلبت الاهتمام العالمي للقضية.",
-    professionEn: "Journalist",
-    professionAr: "صحفية",
-    candles: 445
-  },
-  {
-    id: "11",
-    nameEn: "Babiker Saleh",
-    nameAr: "بابكر صالح",
-    age: 45,
-    dateOfMartyrdom: "2019-04-08",
-    locationEn: "Khartoum",
-    locationAr: "الخرطوم",
-    image: "https://images.unsplash.com/photo-1618835962148-cf177563c6c0?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Babiker was an engineer who helped build the barricades that protected the sit-in site. A quiet, methodical man, he used his technical skills to organize the logistics of the protest camp, ensuring clean water and shelter for thousands.",
-    storyAr: "كان بابكر مهندسًا ساعد في بناء المتاريس التي حمت موقع الاعتصام. رجل هادئ ومنهجي، استخدم مهاراته التقنية لتنظيم لوجستيات مخيم الاحتجاج، مضمنًا المياه النظيفة والمأوى لآلاف الأشخاص.",
-    professionEn: "Engineer",
-    professionAr: "مهندس",
-    candles: 189
-  },
-  {
-    id: "12",
-    nameEn: "Reem Gamal",
-    nameAr: "ريم جمال",
-    age: 23,
-    dateOfMartyrdom: "2021-10-25",
-    locationEn: "Khartoum",
-    locationAr: "الخرطوم",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
-    storyEn: "Reem was an architecture student who designed the iconic protest stages and assembly points. She believed that public spaces belonged to the people and dreamed of redesigning Khartoum's urban landscape to reflect its revolutionary spirit.",
-    storyAr: "كانت ريم طالبة هندسة معمارية صممت منصات الاحتجاج ونقاط التجمع الأيقونية. كانت تؤمن أن الأماكن العامة ملك للشعب وحلمت بإعادة تصميم المشهد الحضري للخرطوم ليعكس روحها الثورية.",
-    professionEn: "Architecture Student",
-    professionAr: "طالبة هندسة معمارية",
-    candles: 267
-  } */
+}
+
 ];
