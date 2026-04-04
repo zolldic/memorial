@@ -9,12 +9,18 @@ import { StatsCounter } from '@/features/home/components/StatsCounter';
 import { SearchArchive } from '@/features/home/components/SearchArchive';
 import { ClosingCTA } from '@/features/home/components/ClosingCTA';
 import { CITY_CHIPS, HOME_YEAR_CHIPS } from '@/shared/utils/filters';
+import { Language } from '@/shared/types';
+
+
+function useArrow( language: Language)
+{
+  return language == 'en' ? ArrowRight : ArrowLeft
+}
 
 export function Home() {
   const { lang } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
-  const isRtl = lang === "ar";
-  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+  const ArrowIcon = useArrow(lang)
 
   // "Story of the Week" — rotate based on week number
   const featuredMartyr = useMemo(() => {
@@ -28,7 +34,7 @@ export function Home() {
 
   return (
     <div className="flex flex-col">
-      <HeroSection lang={lang} ArrowIcon={ArrowIcon} />
+      <HeroSection ArrowIcon={ArrowIcon} />
       
       <WallOfFaces 
         lang={lang} 
