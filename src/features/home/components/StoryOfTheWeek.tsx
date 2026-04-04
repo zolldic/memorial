@@ -27,7 +27,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
             <div className="aspect-[4/5]">
               <img
                 src={featuredMartyr.image}
-                alt={lang === "en" ? featuredMartyr.nameEn : featuredMartyr.nameAr}
+                alt={featuredMartyr.name[lang]}
                 className="w-full h-full object-cover grayscale"
               />
             </div>
@@ -36,7 +36,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
               <div className="flex items-center gap-2 text-background/60">
                 <MapPin size={14} strokeWidth={1.5} />
                 <span className="font-body text-xs">
-                  {lang === "en" ? featuredMartyr.locationEn : featuredMartyr.locationAr}
+                  {featuredMartyr.location[lang]}
                 </span>
               </div>
             </div>
@@ -52,20 +52,20 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
             </div>
 
             <h2 className="font-serif text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-              {lang === "en" ? featuredMartyr.nameEn : featuredMartyr.nameAr}
+              {featuredMartyr.name[lang]}
             </h2>
 
             <div className="flex flex-wrap items-center gap-4 font-body text-xs text-muted-foreground">
-              <span>{lang === "en" ? featuredMartyr.professionEn : featuredMartyr.professionAr}</span>
+              <span>{featuredMartyr.profession[lang]}</span>
               <span>·</span>
-              <span>{lang === "en" ? `Age ${featuredMartyr.age}` : `${t("age")} ${featuredMartyr.age}`}</span>
+              <span>{t("age")} {featuredMartyr.age}</span>
               <span>·</span>
               <span>{featuredMartyr.dateOfMartyrdom}</span>
             </div>
 
-            {/* Drop cap story */}
-            <p className="font-body text-lg leading-relaxed first-letter:font-serif first-letter:text-5xl first-letter:font-bold first-letter:float-start first-letter:me-3 first-letter:mt-1">
-              {lang === "en" ? featuredMartyr.storyEn : featuredMartyr.storyAr}
+           {/* Drop cap story */}
+            <p className="font-body text-lg leading-relaxed first-letter:font-serif first-letter:text-2xl first-letter:font-bold first-letter:float-start first-letter:me-3 first-letter:mt-1">
+              {featuredMartyr.story[lang]}
             </p>
 
             <div className="mt-4 pt-6 border-t border-border-light flex items-center justify-between">
@@ -74,7 +74,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
                 className="group inline-flex items-center gap-2 font-body text-sm hover:underline"
               >
                 {t("readFullProfile")}
-                <ArrowIcon size={14} strokeWidth={1.5} className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition-transform duration-300 ease-out" />
+                <ArrowIcon size={14} strokeWidth={1.5} className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform duration-300 ease-out" />
               </Link>
             </div>
           </div>
