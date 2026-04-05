@@ -35,11 +35,8 @@ export function FilterBar({
   const { t } = useTranslation('dashboard');
   const [showAdvanced, setShowAdvanced] = React.useState(false);
 
-  React.useEffect(() => {
-    if (yearFilter !== '' || monthFilter !== '' || stateFilter !== '') {
-      setShowAdvanced(true);
-    }
-  }, [yearFilter, monthFilter, stateFilter]);
+  // Derived state: auto-show advanced filters if any are active
+  const shouldShowAdvanced = showAdvanced || yearFilter !== '' || monthFilter !== '' || stateFilter !== '';
 
   return (
     <section className="py-8 border-b border-border/70 flex flex-col gap-5">
@@ -68,7 +65,7 @@ export function FilterBar({
 
         {/* Advanced filters toggle */}
         <div className="flex items-center gap-4">
-          {!showAdvanced && (
+          {!shouldShowAdvanced && (
           <button
             onClick={() => setShowAdvanced(true)}
             className="text-sm font-body text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
@@ -90,7 +87,7 @@ export function FilterBar({
       </div>
 
       {/* Advanced Filters - progressive disclosure */}
-      {showAdvanced && (
+      {shouldShowAdvanced && (
         <div className="pt-4 border-t border-border/70">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Year */}
