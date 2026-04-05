@@ -19,21 +19,12 @@ export interface Memory {
 
 export interface Martyr {
   id: string;
-  nameEn: string;
-  nameAr: string;
+  name: Record<Language, string>;
   age: number;
   dateOfMartyrdom: string;
-  locationEn: string;
-  locationAr: string;
+  location: Record<Language, string>;
   image: string;
-  storyEn: string;
-  storyAr: string;
-  professionEn: string;
-  professionAr: string;
+  story: Record<Language, string>;
+  profession: Record<Language, string>;
   candles: number;
-
-  name: Record<string, string>;
-  location: Record<string, string>;
-  story: Record<string, string>;
-  profession: Record<string, string>;
 }
