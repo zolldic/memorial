@@ -1,0 +1,59 @@
+/* AnimatedBackground CSS - Extracted for better performance */
+
+/* Entrance animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  0% { 
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main scroll animation — 50% for seamless loop */
+@keyframes scrollUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Column and item layout */
+.poster-column { 
+  display: flex; 
+  flex-direction: column;
+  will-change: transform;
+}
+
+.poster-item { 
+  flex-shrink: 0;
+}
+
+/* Responsive speed and spacing by breakpoint */
+
+/* Desktop: Full 8 columns, default spacing */
+@media (min-width: 1024px) {
+  .poster-item { margin-bottom: 1rem; }
+}
+
+/* Tablet: 6 columns, compressed spacing */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .poster-item { margin-bottom: 0.75rem; }
+}
+
+/* Mobile: 4 columns, tight spacing */
+@media (max-width: 767px) {
+  .poster-item { margin-bottom: 0.5rem; }
+  
+  .column-0,
+  .column-1,
+  .column-2,
+  .column-3 { 
+    animation-duration: 1.33x; /* 33% slower on mobile */
+  }
+}
