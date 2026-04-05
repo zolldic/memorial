@@ -1,11 +1,11 @@
 import { Link } from 'react-router';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Martyr } from '@/shared/types';
+import { Martyr, Language } from '@/shared/types';
 
 interface WallOfFacesProps {
-  lang: string;
+  lang: Language;
   martyrsData: Martyr[];
   ArrowIcon: LucideIcon;
 }
@@ -46,12 +46,15 @@ function FaceImage({ image, alt, aspectClassName = 'aspect-[3/4]' }: FaceImagePr
 
 export function WallOfFaces({ lang, martyrsData, ArrowIcon }: WallOfFacesProps) {
   const { t } = useTranslation("home");
-  const waterfallProfiles = martyrsData.slice(0, 6);
-  const waterfallColumns = [
-    waterfallProfiles.filter((_, index) => index % 3 === 0),
-    waterfallProfiles.filter((_, index) => index % 3 === 1),
-    waterfallProfiles.filter((_, index) => index % 3 === 2),
-  ];
+  
+  const waterfallColumns = useMemo(() => {
+    const waterfallProfiles = martyrsData.slice(0, 6);
+    return [
+      waterfallProfiles.filter((_, index) => index % 3 === 0),
+      waterfallProfiles.filter((_, index) => index % 3 === 1),
+      waterfallProfiles.filter((_, index) => index % 3 === 2),
+    ];
+  }, [martyrsData]);
 
   return (
     <section className="py-16 md:py-24 border-t border-border/40">

@@ -1,10 +1,10 @@
 import { Link } from 'react-router';
 import { LucideIcon, MapPin, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Martyr } from '@/shared/types';
+import { Martyr, Language } from '@/shared/types';
 
 interface StoryOfTheWeekProps {
-  lang: string;
+  lang: Language;
   featuredMartyr: Martyr;
   ArrowIcon: LucideIcon;
 }
