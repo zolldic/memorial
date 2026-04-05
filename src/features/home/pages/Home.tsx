@@ -1,13 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useLanguage } from '@/app/providers/LanguageProvider';
 import { martyrsData } from '@/shared/data/martyrs';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { HeroSection } from '@/features/home/components/HeroSection';
 import { WallOfFaces } from '@/features/home/components/WallOfFaces';
 import { StoryOfTheWeek } from '@/features/home/components/StoryOfTheWeek';
-import { SearchArchive } from '@/features/home/components/SearchArchive';
 import { ClosingCTA } from '@/features/home/components/ClosingCTA';
-import { CITY_CHIPS, HOME_YEAR_CHIPS } from '@/shared/utils/filters';
 import { Language } from '@/shared/types';
 
 
@@ -18,7 +16,6 @@ function useArrow( language: Language)
 
 export function Home() {
   const { lang } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState("");
   const ArrowIcon = useArrow(lang)
 
   // "Story of the Week" — rotate based on week number
