@@ -1,12 +1,9 @@
-import { ArrowRight, ArrowLeft } from 'lucide-react';
-import { useLanguage } from '@/app/providers/LanguageProvider';
+import { useDirectionalArrow } from '@/shared/hooks/useArrow';
 import { useTranslation } from 'react-i18next';
 
 export function WorkWithUs() {
-  const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
-  const isRtl = lang === "ar";
-  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
+  const ArrowIcon = useDirectionalArrow('forward');
 
   const contributionItems = [
     t('contribute.shareInformation'),

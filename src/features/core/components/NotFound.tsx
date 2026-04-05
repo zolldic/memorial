@@ -1,12 +1,11 @@
 import { Link } from 'react-router';
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
+import { useDirectionalArrow } from '@/shared/hooks/useArrow';
 import { useTranslation } from 'react-i18next';
-import { useLanguage } from '@/app/providers/LanguageProvider';
 
 export function NotFound() {
   const { t } = useTranslation('common');
-  const { lang } = useLanguage();
-  const isRtl = lang === 'ar';
+  const BackArrow = useDirectionalArrow('back');
 
   return (
     <div className="py-16 md:py-24 lg:py-32 min-h-[60vh] flex items-center">
@@ -33,10 +32,9 @@ export function NotFound() {
           to="/"
           className="inline-flex items-center gap-3 px-8 py-4 border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out font-mono text-sm uppercase tracking-wider"
         >
-          <ArrowLeft 
+          <BackArrow 
             size={18} 
-            strokeWidth={1.5} 
-            className={isRtl ? 'rotate-180' : ''} 
+            strokeWidth={1.5}
           />
           {t('notFound.backHome')}
           <Home size={18} strokeWidth={1.5} />
