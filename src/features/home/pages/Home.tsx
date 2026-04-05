@@ -44,14 +44,6 @@ export function Home() {
         ArrowIcon={ArrowIcon} 
       />
 
-      <SearchArchive 
-        lang={lang} 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-        cityChips={CITY_CHIPS} 
-        yearChips={HOME_YEAR_CHIPS} 
-      />
-
       <ClosingCTA ArrowIcon={ArrowIcon} />
     </div>
   );
