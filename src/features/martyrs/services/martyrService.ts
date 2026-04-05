@@ -30,12 +30,12 @@ export const martyrService = {
     const q = query.toLowerCase();
     
     return martyrsData.filter((m) =>
-      m.nameEn.toLowerCase().includes(q) ||
-      m.nameAr.includes(query) ||  // Arabic: use original query, no toLowerCase
-      m.locationEn.toLowerCase().includes(q) ||
-      m.locationAr.includes(query) ||  // Arabic: use original query
-      m.storyEn.toLowerCase().includes(q) ||
-      m.storyAr.includes(query)  // Arabic: use original query
+      m.name.en.toLowerCase().includes(q) ||
+      m.name.ar.includes(query) ||
+      m.location.en.toLowerCase().includes(q) ||
+      m.location.ar.includes(query) ||
+      m.story.en.toLowerCase().includes(q) ||
+      m.story.ar.includes(query)
     );
   },
 };

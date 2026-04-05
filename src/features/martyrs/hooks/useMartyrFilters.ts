@@ -1,25 +1,44 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { SUDAN_STATES } from '@/shared/utils/filters';
 import { Martyr } from '@/shared/types';
+import { useMartyrSearch } from '@/shared/hooks/useMartyrSearch';
 
 export function useMartyrFilters(initialMartyrs: Martyr[] = []) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [monthFilter, setMonthFilter] = useState("");
-  const [stateFilter, setStateFilter] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const [yearFilter, setYearFilter] = useState(searchParams.get('year') || "");
+  const [monthFilter, setMonthFilter] = useState(searchParams.get('month') || "");
+  const [stateFilter, setStateFilter] = useState(searchParams.get('state') || "");
+  
+  const { searchQuery, setSearchQuery, filteredMartyrs: searchedMartyrs } = useMartyrSearch({
+    martyrs: initialMartyrs,
+    returnEmptyWhenNoQuery: false
+  });
+
+  // Initialize search from URL
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) setSearchQuery(query);
+  }, []);
+
+  // Sync filters to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (yearFilter) params.set('year', yearFilter);
+    if (monthFilter) params.set('month', monthFilter);
+    if (stateFilter) params.set('state', stateFilter);
+    
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, yearFilter, monthFilter, stateFilter, setSearchParams]);
 
   const filteredMartyrs = useMemo(() => {
-    if (!initialMartyrs?.length) return [];
+    if (!searchedMartyrs?.length) return [];
     
     const stateEntry = SUDAN_STATES.find((s) => s.value === stateFilter);
 
-    return initialMartyrs.filter((m) => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch =
-        !searchQuery ||
-        m.nameEn.toLowerCase().includes(q) ||
-        m.nameAr.includes(searchQuery);  // Arabic: use original searchQuery, not q
-
+    return searchedMartyrs.filter((m) => {
       const matchesYear = !yearFilter || m.dateOfMartyrdom.startsWith(yearFilter);
       
       const matchesMonth =
@@ -29,18 +48,19 @@ export function useMartyrFilters(initialMartyrs: Martyr[] = []) {
         !stateFilter ||
         !stateEntry ||
         stateEntry.keywords.some((kw) =>
-          m.locationEn.toLowerCase().includes(kw)
+          m.location.en.toLowerCase().includes(kw)
         );
 
-      return matchesSearch && matchesYear && matchesMonth && matchesState;
+      return matchesYear && matchesMonth && matchesState;
     });
-  }, [initialMartyrs, searchQuery, yearFilter, monthFilter, stateFilter]);
+  }, [searchedMartyrs, yearFilter, monthFilter, stateFilter]);
 
   const clearFilters = () => {
     setSearchQuery("");
     setYearFilter("");
     setMonthFilter("");
     setStateFilter("");
+    setSearchParams({}, { replace: true });
   };
 
   const hasFilters = Boolean(searchQuery || yearFilter || monthFilter || stateFilter);

@@ -40,6 +40,11 @@ export function FilterBar({
 
   return (
     <section className="py-8 border-b border-border/70 flex flex-col gap-5">
+      {/* Screen reader announcement for filter results */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {t("martyrsList.showingResults", { count: filteredCount, defaultValue: `Showing ${filteredCount} results` })}
+      </div>
+
       {/* Search - primary action */}
       <div className="flex flex-col gap-4">
         <div className="relative flex-1 max-w-2xl">

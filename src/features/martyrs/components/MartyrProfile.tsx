@@ -18,7 +18,7 @@ export function MartyrProfile({ martyr }: MartyrProfileProps) {
         <div className="aspect-[3/4] lg:h-full relative overflow-hidden">
           <img
             src={martyr.image}
-            alt={lang === "en" ? martyr.nameEn : martyr.nameAr}
+            alt={martyr.name[lang]}
             className="w-full h-full object-cover grayscale transition-none"
           />
           {/* Age stamp */}
@@ -29,7 +29,7 @@ export function MartyrProfile({ martyr }: MartyrProfileProps) {
 
           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-8 lg:hidden">
             <h1 className="text-3xl font-serif font-bold text-background leading-none">
-              {lang === "en" ? martyr.nameEn : martyr.nameAr}
+              {martyr.name[lang]}
             </h1>
           </div>
         </div>
@@ -43,10 +43,10 @@ export function MartyrProfile({ martyr }: MartyrProfileProps) {
               {t("martyrPage.martyrProfile")}
             </div>
             <h1 className="text-4xl md:text-6xl font-serif font-bold tracking-tight leading-[1.02] max-w-xl text-balance">
-              {lang === "en" ? martyr.nameEn : martyr.nameAr}
+              {martyr.name[lang]}
             </h1>
             <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-              {lang === "en" ? martyr.professionEn : martyr.professionAr}
+              {martyr.profession[lang]}
             </div>
           </div>
 
@@ -63,7 +63,7 @@ export function MartyrProfile({ martyr }: MartyrProfileProps) {
                 <MapPin size={12} strokeWidth={1.5} />
                   {t("martyrPage.location")}
               </div>
-              <div className="text-lg md:text-xl font-serif font-bold">{lang === 'en' ? martyr.locationEn : martyr.locationAr}</div>
+              <div className="text-lg md:text-xl font-serif font-bold">{martyr.location[lang]}</div>
             </div>
           </div>
 
@@ -76,7 +76,7 @@ export function MartyrProfile({ martyr }: MartyrProfileProps) {
             </div>
 
             <p className="text-base md:text-lg font-body leading-loose text-foreground max-w-prose">
-              {lang === "en" ? martyr.storyEn : martyr.storyAr}
+              {martyr.story[lang]}
             </p>
           </div>
         </div>

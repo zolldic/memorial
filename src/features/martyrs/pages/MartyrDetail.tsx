@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { Link } from 'react-router';
 import { useLanguage } from '@/app/providers/LanguageProvider';
-import { ArrowLeft, ArrowRight, Share2, Flame } from 'lucide-react';
+import { Share2, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMartyrDetail } from '@/features/martyrs/hooks/useMartyrDetail';
+import { useCandleState } from '@/features/martyrs/hooks/useCandleState';
 import { MartyrProfile } from '@/features/martyrs/components/MartyrProfile';
 import { TributeWall } from '@/features/martyrs/components/TributeWall';
 import { MemorialSection } from '@/features/martyrs/components/MemorialSection';
@@ -13,21 +13,11 @@ export function MartyrDetail() {
   const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
   const { martyr, memories, isLoading, isError } = useMartyrDetail();
-  const isRtl = lang === "ar";
-  
-  const [candleLit, setCandleLit] = useState(false);
-  const [optimisticCandles, setOptimisticCandles] = useState(0);
-
-  const handleLightCandle = () => {
-    if (!candleLit) {
-      setOptimisticCandles(1);
-      setCandleLit(true);
-    }
-  };
+  const { candleLit, optimisticCandles, lightCandle } = useCandleState(martyr?.id);
 
   const handleShare = async () => {
     const url = window.location.href;
-    const title = lang === 'en' ? martyr?.nameEn : martyr?.nameAr;
+    const title = martyr?.name[lang];
     
     if (navigator.share) {
       try {
@@ -66,7 +56,6 @@ export function MartyrDetail() {
     );
   }
 
-  const ArrowIcon = isRtl ? ArrowRight : ArrowLeft;
   const candleCount = (martyr.candles || 0) + optimisticCandles;
 
   return (
@@ -77,7 +66,7 @@ export function MartyrDetail() {
           to="/martyrs"
           className="group inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 ease-out"
         >
-          <ArrowIcon size={14} strokeWidth={1.5} />
+          <BackArrow size={14} strokeWidth={1.5} />
           {t("martyrPage.returnToArchives")}
         </Link>
         <div className="flex gap-2">
@@ -117,7 +106,7 @@ export function MartyrDetail() {
             </div>
           </div>
           <button
-            onClick={handleLightCandle}
+            onClick={lightCandle}
             disabled={candleLit}
             className={`px-6 py-3 min-h-[44px] font-body text-sm transition-colors duration-300 ease-out inline-flex items-center gap-2 ${
               candleLit
@@ -139,7 +128,7 @@ export function MartyrDetail() {
           className="mt-6 inline-flex items-center gap-2 border border-border/70 px-4 py-3 text-sm font-body text-muted-foreground hover:text-foreground hover:border-foreground/80 transition-colors duration-300 ease-out"
         >
           {t("martyrPage.shareAMemoryOf")}
-          {lang === "en" ? martyr.nameEn : martyr.nameAr}
+          {martyr.name[lang]}
         </Link>
       </div>
 
