@@ -20,14 +20,14 @@ export function MartyrsList() {
   return (
     <div className="py-16 md:py-24 lg:py-32 flex flex-col gap-0 max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
       {/* Header */}
-      <section className="border-b-4 border-border pb-12 md:pb-16">
-        <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-6">
-          {t("wallOfFaces", { ns: 'home' })}
+      <section className="pb-10 md:pb-12 mb-10 border-b border-border/70 max-w-3xl">
+        <div className="font-mono text-xs uppercase tracking-[0.28em] text-muted-foreground mb-4">
+          {t("martyrsList.completeArchive")}
         </div>
-        <h1 className="text-6xl md:text-9xl font-serif font-black uppercase tracking-tighter leading-[0.85] mb-8">
+        <h1 className="text-4xl md:text-7xl font-serif font-bold tracking-tight leading-[1.02] mb-6 text-balance">
           {t("martyrsList.title")}
         </h1>
-        <p className="text-xl text-muted-foreground max-w-prose font-body italic leading-loose">
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl font-body leading-loose">
           {t("martyrsList.wallOfFacesSubtitle")}
         </p>
       </section>
@@ -46,14 +46,14 @@ export function MartyrsList() {
       {/* Masonry Gallery Loading State */}
       <section className="py-12">
         {isLoading ? (
-           <div className="text-center py-32 border-2 border-border-light flex flex-col items-center gap-4">
-             <div className="w-12 h-12 border-4 border-t-foreground border-e-foreground border-b-border border-s-border rounded-full animate-spin"></div>
+           <div className="text-center py-28 border border-border/70 flex flex-col items-center gap-4 bg-muted/20">
+             <div className="w-10 h-10 border-2 border-border/60 border-t-foreground animate-spin"></div>
              <p className="font-mono text-sm uppercase tracking-widest text-muted-foreground">
                {t("martyrsList.loadingRecords")}
              </p>
            </div>
         ) : isError ? (
-          <div className="text-center py-32 border-2 border-destructive bg-destructive/10 text-destructive">
+          <div className="text-center py-28 border border-border/70 bg-muted/20 text-foreground">
             <p className="font-mono uppercase tracking-widest">{t("martyrsList.loadingError")}</p>
           </div>
         ) : filteredMartyrs.length > 0 ? (
@@ -70,12 +70,12 @@ export function MartyrsList() {
             </Masonry>
           </ResponsiveMasonry>
         ) : (
-          <div className="text-center py-32 border-2 border-border-light">
-            <Search size={48} strokeWidth={1} className="text-border-light mx-auto mb-6" />
-            <p className="text-2xl font-serif font-black uppercase italic tracking-tighter text-muted-foreground">
+          <div className="text-center py-28 border border-border/70 bg-muted/10">
+            <Search size={40} strokeWidth={1} className="text-border-light mx-auto mb-5" />
+            <p className="text-xl md:text-2xl font-serif font-bold tracking-tight text-muted-foreground">
               {t("martyrsList.noRecordsFound")}
             </p>
-            <p className="mt-4 text-muted-foreground font-body italic max-w-md mx-auto">
+            <p className="mt-4 text-muted-foreground font-body leading-loose max-w-md mx-auto">
               {t("martyrsList.noRecordsMessage")}
             </p>
           </div>
@@ -83,11 +83,12 @@ export function MartyrsList() {
       </section>
 
       {/* Closing */}
-      <div className="py-16 md:py-24 border-t-8 border-border text-center texture-lines">
-        <div className="max-w-xl mx-auto space-y-6 relative z-10">
-          <div className="font-serif text-8xl leading-none opacity-10">"</div>
-          <p className="font-serif text-2xl italic -mt-12">"{t("martyrsList.closingQuote")}"</p>
-          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+      <div className="py-14 md:py-20 border-t border-border/70 text-center">
+        <div className="max-w-xl mx-auto space-y-4">
+          <p className="font-serif text-lg md:text-xl italic text-foreground leading-relaxed">
+            {t("martyrsList.closingQuote")}
+          </p>
+          <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.28em] text-muted-foreground">
             {t("martyrsList.inEternalRemembrance")}
           </div>
         </div>
