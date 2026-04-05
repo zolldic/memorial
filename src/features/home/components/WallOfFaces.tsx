@@ -13,11 +13,6 @@ interface WallOfFacesProps {
 interface FaceImageProps {
   image: string;
   alt: string;
-}
-
-interface FaceImageProps {
-  image: string;
-  alt: string;
   aspectClassName?: string;
 }
 
@@ -59,10 +54,10 @@ export function WallOfFaces({ lang, martyrsData, ArrowIcon }: WallOfFacesProps) 
   ];
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-16 md:py-24 border-t border-border/40">
       <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
-        <div className="flex items-end justify-between mb-10">
-          <div>
+        <div className="flex items-end justify-between mb-10 gap-6">
+          <div className="max-w-xl">
             <h2 className="font-serif text-4xl md:text-5xl font-bold tracking-tight">
               {t("wallOfFaces")}
             </h2>
@@ -82,17 +77,17 @@ export function WallOfFaces({ lang, martyrsData, ArrowIcon }: WallOfFacesProps) 
             <div
               key={columnIndex}
               className="flex flex-col gap-8"
-              style={{ marginTop: columnIndex === 1 ? '3rem' : columnIndex === 2 ? '6rem' : '0' }}
+              style={{ marginTop: columnIndex === 1 ? '2.5rem' : columnIndex === 2 ? '5rem' : '0' }}
             >
               {column.map((martyr, itemIndex) => {
                 const isTallCard = columnIndex === 1 && itemIndex === 0;
-                const isWideCard = columnIndex === 2 && itemIndex === 1;
+                const isShortCard = columnIndex === 2 && itemIndex === 0;
 
                 return (
                   <Link
                     key={martyr.id}
                     to={`/martyrs/${martyr.id}`}
-                    className="group overflow-hidden relative bg-muted border border-border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
+                    className="group overflow-hidden relative bg-muted border border-border/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
                     aria-label={`${martyr.name[lang]}, ${martyr.profession[lang]}`}
                   >
                     <FaceImage
@@ -101,14 +96,14 @@ export function WallOfFaces({ lang, martyrsData, ArrowIcon }: WallOfFacesProps) 
                       aspectClassName={
                         isTallCard
                           ? 'aspect-[4/5]'
-                          : isWideCard
-                            ? 'aspect-[3/4]'
+                          : isShortCard
+                            ? 'aspect-[3/3.55]'
                             : 'aspect-[3/4]'
                       }
                     />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/90 via-foreground/60 to-transparent p-4 pt-12">
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/88 via-foreground/55 to-transparent p-4 pt-12">
                       <div className="font-serif text-background text-base font-bold leading-tight">
-                         {martyr.name[lang]}
+                        {martyr.name[lang]}
                       </div>
                       <div className="font-body text-background/60 text-xs mt-1">
                         {martyr.profession[lang]}

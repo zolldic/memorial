@@ -22,7 +22,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
   return (
     <section className="py-16 md:py-24 lg:py-32">
       <div className="max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
-        <div className="mb-12">
+        <div className="mb-10">
           <h3 className="font-body text-sm text-muted-foreground mb-4">
             {t("storyOfTheWeek")}
           </h3>
@@ -30,7 +30,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Photo */}
-          <div className="relative overflow-hidden border border-border">
+          <div className="relative overflow-hidden border border-border/80 bg-muted/20">
             <div className="aspect-[4/5]">
               <img
                 src={featuredMartyr.image}
@@ -39,7 +39,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
               />
             </div>
             {/* Overlay badge */}
-            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-foreground/80 to-transparent">
               <div className="flex items-center gap-2 text-background/60">
                 <MapPin size={14} strokeWidth={1.5} />
                 <span className="font-body text-xs">
@@ -50,7 +50,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
           </div>
 
           {/* Story */}
-          <div className="border border-border border-t-0 lg:border-t lg:border-s-0 p-8 md:p-12 flex flex-col justify-center gap-6 bg-background">
+          <div className="border border-border/80 border-t-0 lg:border-t lg:border-s-0 p-8 md:p-12 flex flex-col justify-center gap-6 bg-background">
             <div className="flex items-center gap-2">
               <Flame size={14} strokeWidth={1.5} className="text-muted-foreground" />
               <span className="font-body text-xs text-muted-foreground">
@@ -58,7 +58,7 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
               </span>
             </div>
 
-            <h2 className="font-serif text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+            <h2 className="max-w-md font-serif text-4xl md:text-6xl font-bold tracking-tight leading-tight">
               {featuredMartyr.name[lang]}
             </h2>
 
@@ -70,15 +70,14 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
               <span>{featuredMartyr.dateOfMartyrdom}</span>
             </div>
 
-           {/* Drop cap story */}
-            <p className="font-body text-lg leading-relaxed first-letter:font-serif first-letter:text-2xl first-letter:font-bold first-letter:float-start first-letter:me-3 first-letter:mt-1">
-              {storyPreview} 
-
+            {/* Drop cap story */}
+            <p className="max-w-prose font-body text-lg leading-relaxed first-letter:font-serif first-letter:text-2xl first-letter:font-bold first-letter:float-start first-letter:me-3 first-letter:mt-1">
+              {storyPreview}
             </p>
             <div className="mt-2 pt-2 border-t border-border-light flex items-center justify-between">
               <Link
                 to={`/martyrs/${featuredMartyr.id}`}
-                className="group inline-flex items-center gap-2 font-body text-sm hover:underline"
+                className="group inline-flex items-center gap-2 font-body text-sm hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
               >
                 {t("readFullProfile")}
                 <ArrowIcon size={14} strokeWidth={1.5} className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform duration-300 ease-out" />

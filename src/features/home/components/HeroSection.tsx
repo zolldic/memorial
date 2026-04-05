@@ -11,22 +11,22 @@ export function HeroSection({  ArrowIcon }: HeroSectionProps) {
   const { t } = useTranslation("home");
 
   return (
-    <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden border-b border-border/40">
       {/* Background — Animated Archive Portraits */}
       <div className="absolute inset-0 z-0">
         <AnimatedBackground absolute />
         {/* Dark overlay to ensure white text readability over the light-themed animated background */}
-        <div className="absolute inset-0 bg-foreground/60 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-foreground/55 mix-blend-multiply" />
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-8 lg:px-12 text-background text-center py-32">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 md:px-8 lg:px-12 text-background text-center py-28 md:py-32">
         {/* Main headline */}
-        <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold leading-[0.95] tracking-tight mb-12">
+        <h1 className="mx-auto max-w-4xl text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-[0.95] tracking-tight mb-8">
           {t("ourMartyrsDoNotDie")}
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg md:text-xl font-body text-background/70 max-w-prose mx-auto my-16 leading-relaxed">
+        <p className="text-lg md:text-xl font-body text-background/72 max-w-2xl mx-auto my-12 leading-relaxed">
           {t("livingArchiveSubtitle")}
         </p>
 
