@@ -1,22 +1,16 @@
 import { useMemo } from 'react';
 import { useLanguage } from '@/app/providers/LanguageProvider';
 import { martyrsData } from '@/shared/data/martyrs';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { useDirectionalArrow } from '@/shared/hooks/useArrow';
 import { HeroSection } from '@/features/home/components/HeroSection';
 import { WallOfFaces } from '@/features/home/components/WallOfFaces';
 import { StoryOfTheWeek } from '@/features/home/components/StoryOfTheWeek';
 import { ClosingCTA } from '@/features/home/components/ClosingCTA';
-import { Language } from '@/shared/types';
 
-
-function useArrow( language: Language)
-{
-  return language == 'en' ? ArrowRight : ArrowLeft
-}
 
 export function Home() {
   const { lang } = useLanguage();
-  const ArrowIcon = useArrow(lang)
+  const ArrowIcon = useDirectionalArrow('forward');
 
   // "Story of the Week" — rotate based on week number
   const featuredMartyr = useMemo(() => {
