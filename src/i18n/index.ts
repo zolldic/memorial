@@ -28,7 +28,7 @@ const backend = {
     }
 
     loader()
-      .then((module: any) => callback(null, module.default))
+      .then((module: { default: unknown }) => callback(null, module.default))
       .catch((error) => callback(error));
   },
 };

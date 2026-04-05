@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Root } from "@/shared/components/layout/Root";
 import { Home } from "@/features/home/pages/Home";
 
@@ -13,11 +14,13 @@ const NotFound = lazy(() => import("@/features/core/components/NotFound").then(m
 
 // Loading fallback component
 function PageLoader() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className="w-10 h-10 border-2 border-border border-t-foreground animate-spin mx-auto mb-4"></div>
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Loading...</p>
+        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{t('loading')}</p>
       </div>
     </div>
   );
