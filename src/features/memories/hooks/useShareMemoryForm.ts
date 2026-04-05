@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { martyrsData } from '@/shared/data/martyrs';
+import { useMartyrSearch } from '@/shared/hooks/useMartyrSearch';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +10,6 @@ type Relationship = "family" | "friend" | "stranger";
 export function useShareMemoryForm() {
   const { t } = useTranslation('dashboard');
   const [step, setStep] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedMartyrId, setSelectedMartyrId] = useState<string | null>(null);
   const [memoryType, setMemoryType] = useState<MemoryType>("story");
   const [relationship, setRelationship] = useState<Relationship>("stranger");
@@ -17,14 +17,10 @@ export function useShareMemoryForm() {
   const [content, setContent] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const filteredMartyrs = useMemo(() => {
-    return searchQuery.trim()
-      ? martyrsData.filter((m) =>
-          m.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          m.nameAr.includes(searchQuery)
-        )
-      : [];
-  }, [searchQuery]);
+  const { searchQuery, setSearchQuery, filteredMartyrs } = useMartyrSearch({
+    martyrs: martyrsData,
+    returnEmptyWhenNoQuery: true
+  });
 
   const selectedMartyr = useMemo(() => 
     martyrsData.find((m) => m.id === selectedMartyrId), 

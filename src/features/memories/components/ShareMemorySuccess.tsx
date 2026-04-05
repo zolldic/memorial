@@ -23,7 +23,7 @@ export function ShareMemorySuccess({ selectedMartyr, resetForm }: Props) {
         </h1>
         {selectedMartyr && (
           <p className="font-body text-lg text-muted-foreground">
-            {t("shareMemory.memoryFor")}: <strong>{lang === "en" ? selectedMartyr.nameEn : selectedMartyr.nameAr}</strong>
+            {t("shareMemory.memoryFor")}: <strong>{selectedMartyr.name[lang]}</strong>
           </p>
         )}
       </div>
