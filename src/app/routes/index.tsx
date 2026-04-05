@@ -1,12 +1,27 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import { Root } from "@/shared/components/layout/Root";
 import { Home } from "@/features/home/pages/Home";
-import { About } from "@/features/core/pages/About";
-import { WorkWithUs } from "@/features/core/pages/WorkWithUs";
-import { MartyrsList } from "@/features/martyrs/pages/MartyrsList";
-import { MartyrDetail } from "@/features/martyrs/pages/MartyrDetail";
-import { ShareMemory } from "@/features/memories/pages/ShareMemory";
-import { NotFound } from "@/features/core/components/NotFound";
+
+// Lazy load heavy routes
+const About = lazy(() => import("@/features/core/pages/About").then(m => ({ default: m.About })));
+const WorkWithUs = lazy(() => import("@/features/core/pages/WorkWithUs").then(m => ({ default: m.WorkWithUs })));
+const MartyrsList = lazy(() => import("@/features/martyrs/pages/MartyrsList").then(m => ({ default: m.MartyrsList })));
+const MartyrDetail = lazy(() => import("@/features/martyrs/pages/MartyrDetail").then(m => ({ default: m.MartyrDetail })));
+const ShareMemory = lazy(() => import("@/features/memories/pages/ShareMemory").then(m => ({ default: m.ShareMemory })));
+const NotFound = lazy(() => import("@/features/core/components/NotFound").then(m => ({ default: m.NotFound })));
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-10 h-10 border-2 border-border border-t-foreground animate-spin mx-auto mb-4"></div>
+        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -14,12 +29,30 @@ export const router = createBrowserRouter([
     Component: Root,
     children: [
       { index: true, Component: Home },
-      { path: "about", Component: About },
-      { path: "work", Component: WorkWithUs },
-      { path: "martyrs", Component: MartyrsList },
-      { path: "martyrs/:id", Component: MartyrDetail },
-      { path: "share", Component: ShareMemory },
-      { path: "*", Component: NotFound },
+      { 
+        path: "about", 
+        element: <Suspense fallback={<PageLoader />}><About /></Suspense>
+      },
+      { 
+        path: "work", 
+        element: <Suspense fallback={<PageLoader />}><WorkWithUs /></Suspense>
+      },
+      { 
+        path: "martyrs", 
+        element: <Suspense fallback={<PageLoader />}><MartyrsList /></Suspense>
+      },
+      { 
+        path: "martyrs/:id", 
+        element: <Suspense fallback={<PageLoader />}><MartyrDetail /></Suspense>
+      },
+      { 
+        path: "share", 
+        element: <Suspense fallback={<PageLoader />}><ShareMemory /></Suspense>
+      },
+      { 
+        path: "*", 
+        element: <Suspense fallback={<PageLoader />}><NotFound /></Suspense>
+      },
     ],
   },
 ]);
