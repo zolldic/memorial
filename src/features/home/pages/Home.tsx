@@ -5,7 +5,6 @@ import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { HeroSection } from '@/features/home/components/HeroSection';
 import { WallOfFaces } from '@/features/home/components/WallOfFaces';
 import { StoryOfTheWeek } from '@/features/home/components/StoryOfTheWeek';
-import { StatsCounter } from '@/features/home/components/StatsCounter';
 import { SearchArchive } from '@/features/home/components/SearchArchive';
 import { ClosingCTA } from '@/features/home/components/ClosingCTA';
 import { CITY_CHIPS, HOME_YEAR_CHIPS } from '@/shared/utils/filters';
@@ -28,9 +27,6 @@ export function Home() {
     return martyrsData[weekOfYear % martyrsData.length];
   }, []);
 
-  const totalCandles = useMemo(() => 
-    martyrsData.reduce((sum, m) => sum + m.candles, 0),
-  []);
 
   return (
     <div className="flex flex-col">
@@ -46,11 +42,6 @@ export function Home() {
         lang={lang} 
         featuredMartyr={featuredMartyr} 
         ArrowIcon={ArrowIcon} 
-      />
-
-      <StatsCounter 
-        martyrsData={martyrsData} 
-        totalCandles={totalCandles} 
       />
 
       <SearchArchive 
