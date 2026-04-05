@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { MapPin, Flame } from 'lucide-react';
 import { Martyr } from '@/shared/types';
 
 interface MartyrCardProps {
@@ -12,35 +11,30 @@ export function MartyrCard({ martyr, idx, lang }: MartyrCardProps) {
   return (
     <Link
       to={`/martyrs/${martyr.id}`}
-      className="group block border border-border overflow-hidden relative bg-background hover:shadow-lg transition-shadow duration-300"
+      className="group block border border-border/70 overflow-hidden relative bg-background focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
       style={{ margin: '-1px' }}
     >
       {/* Photo */}
-      <div className={`overflow-hidden ${idx % 3 === 0 ? 'aspect-[3/4]' : idx % 3 === 1 ? 'aspect-square' : 'aspect-[4/5]'}`}>
+      <div className="overflow-hidden aspect-[3/4]">
         <img
           src={martyr.image}
           alt={lang === "en" ? martyr.nameEn : martyr.nameAr}
           loading="lazy"
-          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-out"
+          className="w-full h-full object-cover grayscale transition-none"
         />
       </div>
 
       {/* Always visible info */}
-      <div className="p-4 border-t border-border bg-background group-hover:bg-foreground group-hover:text-background transition-colors duration-300 ease-out">
-        <div className="font-serif text-lg font-bold leading-tight mb-2">
+      <div className="p-4 md:p-5 border-t border-border/70 bg-background">
+        <div className="font-serif text-base md:text-lg font-bold leading-tight mb-2 text-foreground">
           {lang === "en" ? martyr.nameEn : martyr.nameAr}
         </div>
-        <div className="flex flex-col gap-1.5 font-body text-xs text-muted-foreground group-hover:text-background/70">
+        <div className="space-y-1.5 font-body text-[11px] md:text-xs text-muted-foreground leading-relaxed">
           <div>{lang === "en" ? martyr.professionEn : martyr.professionAr}</div>
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1">
-              <MapPin size={12} strokeWidth={1.5} />
-              {lang === "en" ? martyr.locationEn : martyr.locationAr}
-            </span>
-            <span className="flex items-center gap-1">
-              <Flame size={12} strokeWidth={1.5} />
-              {martyr.candles.toLocaleString()}
-            </span>
+          <div>
+            {lang === "en" ? martyr.locationEn : martyr.locationAr}
+            <span className="mx-2" aria-hidden="true">·</span>
+            {martyr.candles.toLocaleString()}
           </div>
         </div>
       </div>

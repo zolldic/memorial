@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useLanguage } from '@/app/providers/LanguageProvider';
-import { ArrowLeft, ArrowRight, Share2, Printer, Flame } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Share2, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useMartyrDetail } from '@/features/martyrs/hooks/useMartyrDetail';
 import { MartyrProfile } from '@/features/martyrs/components/MartyrProfile';
@@ -43,20 +43,22 @@ export function MartyrDetail() {
 
   if (isLoading) {
     return (
-      <div className="py-32 text-center max-w-6xl mx-auto px-6 md:px-8 lg:px-12 font-mono uppercase tracking-widest animate-pulse">
-        {t("martyrPage.loadingRecord")}
+      <div className="py-28 md:py-32 text-center max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
+        <p className="font-mono text-[10px] md:text-xs uppercase tracking-[0.28em] text-muted-foreground">
+          {t("martyrPage.loadingRecord")}
+        </p>
       </div>
     );
   }
 
   if (isError || !martyr) {
     return (
-      <div className="py-32 text-center max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
-        <h1 className="text-4xl font-serif font-black uppercase">{t("martyrPage.recordNotFound")}</h1>
-        <p className="mt-4 text-muted-foreground font-body italic">{t("martyrPage.recordNotFoundMessage")}</p>
+      <div className="py-28 md:py-32 text-center max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
+        <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight">{t("martyrPage.recordNotFound")}</h1>
+        <p className="mt-4 text-muted-foreground font-body leading-loose max-w-xl mx-auto">{t("martyrPage.recordNotFoundMessage")}</p>
         <Link
           to="/martyrs"
-          className="mt-8 inline-block bg-foreground text-background px-8 py-4 font-mono uppercase tracking-widest hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring transition-colors duration-500 ease-out"
+          className="mt-8 inline-flex items-center gap-2 border border-foreground/80 text-foreground px-8 py-4 font-body hover:bg-foreground hover:text-background transition-colors duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
         >
           {t("martyrPage.returnToArchives")}
         </Link>
@@ -70,21 +72,22 @@ export function MartyrDetail() {
   return (
     <div className="py-16 md:py-24 lg:py-32 flex flex-col gap-12 max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
       {/* Top bar */}
-      <div className="flex justify-between items-center border-b-4 border-border pb-8">
+      <div className="flex justify-between items-center gap-4 border-b border-border/70 pb-6">
         <Link
           to="/martyrs"
-          className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-widest hover:underline transition-all duration-500 ease-out"
+          className="group inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 ease-out"
         >
-          <ArrowIcon size={16} strokeWidth={1.5} />
+          <ArrowIcon size={14} strokeWidth={1.5} />
           {t("martyrPage.returnToArchives")}
         </Link>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <button
             onClick={handleShare}
             aria-label={t('martyrPage.shareProfile', { defaultValue: 'Share this profile' })}
-            className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
+            className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] border border-border/70 text-sm font-body text-muted-foreground hover:text-foreground hover:border-foreground/80 transition-colors duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
           >
-            <Share2 size={16} strokeWidth={1.5} aria-hidden="true" />
+            <Share2 size={14} strokeWidth={1.5} aria-hidden="true" />
+            <span>{t('martyrPage.shareProfile', { defaultValue: 'Share' })}</span>
           </button>
 {/*           <button
             onClick={() => window.print()}
@@ -100,22 +103,25 @@ export function MartyrDetail() {
 
       <div className="lg:w-[55%] lg:ms-auto md:px-16 mb-12">
         {/* Light a Candle */}
-        <div className="border-2 border-border p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Flame size={24} strokeWidth={1.5} className={candleLit ? "text-foreground" : "text-muted-foreground"} />
+        <div className="border border-border/70 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 bg-background">
+          <div className="flex items-start gap-4">
+            <Flame size={20} strokeWidth={1.5} className={candleLit ? "text-foreground" : "text-muted-foreground"} />
             <div>
-              <div className="font-serif text-2xl font-black">{candleCount.toLocaleString()}</div>
-              <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <div className="font-serif text-xl md:text-2xl font-bold leading-none">{candleCount.toLocaleString()}</div>
+              <div className="mt-1 font-mono text-[10px] md:text-xs uppercase tracking-[0.25em] text-muted-foreground">
                 {t("martyrPage.candlesLitInHonor")}
               </div>
+              <p className="mt-3 max-w-sm text-sm leading-loose text-muted-foreground">
+                {t('martyrPage.candleNote', { defaultValue: 'Lighting a candle adds a quiet mark of remembrance.' })}
+              </p>
             </div>
           </div>
           <button
             onClick={handleLightCandle}
             disabled={candleLit}
-            className={`px-6 py-3 min-h-[44px] font-mono text-xs uppercase tracking-widest transition-colors duration-500 ease-out inline-flex items-center gap-2 ${
+            className={`px-6 py-3 min-h-[44px] font-body text-sm transition-colors duration-300 ease-out inline-flex items-center gap-2 ${
               candleLit
-                ? "bg-muted text-muted-foreground border-2 border-border-light cursor-default"
+                ? "bg-muted text-muted-foreground border border-border/70 cursor-default"
                 : "bg-foreground text-background hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring"
             }`}
           >
@@ -130,7 +136,7 @@ export function MartyrDetail() {
         {/* Share a Memory link */}
         <Link
           to={`/share?martyr=${martyr.id}`}
-          className="mt-6 block border-2 border-border p-4 text-center font-mono text-xs uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors duration-500 ease-out"
+          className="mt-6 inline-flex items-center gap-2 border border-border/70 px-4 py-3 text-sm font-body text-muted-foreground hover:text-foreground hover:border-foreground/80 transition-colors duration-300 ease-out"
         >
           {t("martyrPage.shareAMemoryOf")}
           {lang === "en" ? martyr.nameEn : martyr.nameAr}

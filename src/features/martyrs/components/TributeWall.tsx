@@ -23,47 +23,44 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
 
   return (
     <section className="mt-8">
-      <div className="border-b-4 border-border pb-4 mb-12">
-        <h2 className="font-serif text-4xl font-black uppercase italic tracking-tighter">
+      <div className="pb-4 mb-10 border-b border-border/70">
+        <h2 className="font-serif text-3xl md:text-4xl font-bold tracking-tight">
           {t("martyrPage.tributeWall")}
         </h2>
-        <p className="font-body italic text-muted-foreground mt-2">
+        <p className="font-body text-sm md:text-base text-muted-foreground mt-3 leading-loose max-w-2xl">
           {t("martyrPage.personalMemoriesSubtitle")}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-s border-border">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-t border-border/70">
         {memories.map((memory) => {
           const RelIcon = relationshipIcons[memory.relationship] || User;
           return (
             <div
               key={memory.id}
-              className="group border-e border-b border-border p-8 bg-background hover:bg-muted transition-colors duration-500 ease-out relative"
+              className="border-e border-b border-border/70 p-7 md:p-8 bg-background relative"
             >
-              <div className="absolute top-0 end-0 w-0 h-0 border-s-[20px] border-s-transparent border-t-[20px] border-t-[#E5E5E5]" />
-
-              <div className="font-serif text-6xl leading-none opacity-10 mb-2">"</div>
-              <p className="font-body italic text-lg leading-loose -mt-6 mb-6">
+              <p className="font-body text-base md:text-lg leading-loose text-foreground mb-6">
                 {lang === "en" ? memory.contentEn : memory.contentAr}
               </p>
 
-              <div className="flex items-center justify-between pt-4 border-t border-border-light">
+              <div className="flex items-center justify-between pt-4 border-t border-border/70">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 border border-border flex items-center justify-center">
+                  <div className="w-8 h-8 border border-border/70 flex items-center justify-center text-muted-foreground">
                     <RelIcon size={14} strokeWidth={1.5} />
                   </div>
                   <div>
-                    <div className="font-mono text-xs uppercase tracking-widest">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.25em]">
                       {memory.authorName}
                     </div>
-                    <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                       {memory.relationship === "family" && t("martyrPage.relationship.family")}
                       {memory.relationship === "friend" && t("martyrPage.relationship.friend")}
                       {memory.relationship === "stranger" && t("martyrPage.relationship.stranger")}
                     </div>
                   </div>
                 </div>
-                <div className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                   {memory.date}
                 </div>
               </div>
@@ -75,7 +72,7 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
       <div className="mt-8 text-center">
         <Link
           to={`/share?martyr=${martyrId}`}
-          className="inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring transition-colors duration-500 ease-out"
+          className="inline-flex items-center gap-3 border border-foreground/80 text-foreground px-8 py-4 font-body text-sm hover:bg-foreground hover:text-background transition-colors duration-300 ease-out"
         >
           {t("martyrPage.addYourMemory")}
         </Link>

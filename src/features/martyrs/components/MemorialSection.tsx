@@ -1,4 +1,3 @@
-import { useLanguage } from "@/app/providers/LanguageProvider";
 import { useTranslation } from 'react-i18next';
 
 interface MemorialSectionProps {
@@ -9,11 +8,12 @@ export function MemorialSection({ martyrId }: MemorialSectionProps) {
   const { t } = useTranslation('dashboard');
   
   return (
-    <section className="bg-foreground text-background p-12 text-center texture-radial-inverted mt-4">
-      <div className="relative z-10">
-        <div className="font-serif text-6xl leading-none opacity-10 mb-2">"</div>
-        <p className="font-serif text-xl italic -mt-6 mb-4">"{t("martyrPage.memorialMessage")}"</p>
-        <div className="font-mono text-xs uppercase tracking-widest text-background/40 border-t border-background/10 pt-4 inline-block">
+    <section className="mt-6 border-t border-border/70 pt-8 pb-8 text-center">
+      <div className="max-w-3xl mx-auto px-6 md:px-8 lg:px-12">
+        <p className="font-serif text-lg md:text-xl leading-relaxed text-foreground max-w-2xl mx-auto">
+          {t("martyrPage.memorialMessage")}
+        </p>
+        <div className="mt-4 font-mono text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
           {t("martyrPage.archiveRegistryId")}: {martyrId.padStart(6, '0')}
         </div>
       </div>

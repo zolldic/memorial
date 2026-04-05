@@ -42,9 +42,9 @@ export function FilterBar({
   }, [yearFilter, monthFilter, stateFilter]);
 
   return (
-    <section className="py-8 border-b border-border flex flex-col gap-6">
+    <section className="py-8 border-b border-border/70 flex flex-col gap-5">
       {/* Search - primary action */}
-      <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+      <div className="flex flex-col gap-4">
         <div className="relative flex-1 max-w-2xl">
           <div className="absolute inset-y-0 start-0 ps-4 flex items-center pointer-events-none">
             <Search size={18} strokeWidth={1.5} className="text-muted-foreground" />
@@ -54,7 +54,7 @@ export function FilterBar({
             placeholder={t("martyrsList.searchByName")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full ps-12 pe-10 py-4 border border-border bg-background font-body placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors"
+            className="w-full ps-12 pe-10 py-4 border border-border/70 bg-background font-body placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors"
           />
           {searchQuery && (
             <button
@@ -67,25 +67,37 @@ export function FilterBar({
         </div>
 
         {/* Advanced filters toggle */}
-        {!showAdvanced && (
+        <div className="flex items-center gap-4">
+          {!showAdvanced && (
           <button
             onClick={() => setShowAdvanced(true)}
-            className="border border-border px-6 py-4 font-body text-sm hover:bg-muted transition-colors"
+            className="text-sm font-body text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
           >
             {t("martyrsList.refineSearch", { defaultValue: "Refine search" })}
           </button>
-        )}
+          )}
+
+          {hasFilters && (
+            <button
+              onClick={clearFilters}
+              className="text-sm font-body text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors flex items-center gap-2"
+            >
+              <X size={14} strokeWidth={1.5} />
+              {t("clearFilters", { ns: "common" })}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Advanced Filters - progressive disclosure */}
       {showAdvanced && (
-        <div className="flex flex-col gap-4 pt-4 border-t border-border-light">
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        <div className="pt-4 border-t border-border/70">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Year */}
             <select
               value={yearFilter}
               onChange={(e) => setYearFilter(e.target.value)}
-              className="w-full sm:w-auto min-h-[44px] border border-border bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
+              className="w-full min-h-[44px] border border-border/70 bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
             >
               {YEARS.map((y) => (
                 <option key={y.value} value={y.value}>
@@ -98,7 +110,7 @@ export function FilterBar({
             <select
               value={monthFilter}
               onChange={(e) => setMonthFilter(e.target.value)}
-              className="w-full sm:w-auto min-h-[44px] border border-border bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
+              className="w-full min-h-[44px] border border-border/70 bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
             >
               {MONTHS.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -111,7 +123,7 @@ export function FilterBar({
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
-              className="w-full sm:w-auto min-h-[44px] border border-border bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
+              className="w-full min-h-[44px] border border-border/70 bg-background px-4 py-3 font-body text-sm cursor-pointer hover:bg-muted transition-colors"
             >
               {SUDAN_STATES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -119,16 +131,6 @@ export function FilterBar({
                 </option>
               ))}
             </select>
-
-            {hasFilters && (
-              <button
-                onClick={clearFilters}
-                className="border border-border px-4 py-3 font-body text-sm hover:bg-muted transition-colors flex items-center gap-2"
-              >
-                <X size={14} strokeWidth={1.5} />
-                {t("clearFilters", { ns: "common" })}
-              </button>
-            )}
           </div>
         </div>
       )}
