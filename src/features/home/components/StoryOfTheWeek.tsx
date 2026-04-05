@@ -9,8 +9,15 @@ interface StoryOfTheWeekProps {
   ArrowIcon: LucideIcon;
 }
 
+function truncateToWords(text: string, maxWords: number): string {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= maxWords) return text;
+  return `${words.slice(0, maxWords).join(" ")} ... `;
+}
+
 export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWeekProps) {
   const { t } = useTranslation("home");
+  const storyPreview = truncateToWords(featuredMartyr.story[lang], 50);
 
   return (
     <section className="py-16 md:py-24 lg:py-32">
@@ -65,10 +72,10 @@ export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWe
 
            {/* Drop cap story */}
             <p className="font-body text-lg leading-relaxed first-letter:font-serif first-letter:text-2xl first-letter:font-bold first-letter:float-start first-letter:me-3 first-letter:mt-1">
-              {featuredMartyr.story[lang]}
-            </p>
+              {storyPreview} 
 
-            <div className="mt-4 pt-6 border-t border-border-light flex items-center justify-between">
+            </p>
+            <div className="mt-2 pt-2 border-t border-border-light flex items-center justify-between">
               <Link
                 to={`/martyrs/${featuredMartyr.id}`}
                 className="group inline-flex items-center gap-2 font-body text-sm hover:underline"
