@@ -8,6 +8,8 @@ import { ProtectedRoute } from "@/features/admin/auth/ProtectedRoute";
 import { AdminLayout } from "@/features/admin/dashboard/AdminLayout";
 import { DashboardPage } from "@/features/admin/dashboard/DashboardPage";
 import { PendingMemoriesPage } from "@/features/admin/memories/PendingMemoriesPage";
+import { MartyrsManagementPage } from "@/features/admin/martyrs/MartyrsManagementPage";
+import { MartyrFormPage } from "@/features/admin/martyrs/MartyrFormPage";
 
 // Lazy load heavy routes
 const About = lazy(() => import("@/features/core/pages/About").then(m => ({ default: m.About })));
@@ -78,7 +80,15 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { 
         path: "martyrs", 
-        element: <div className="p-8">Martyrs Management (Coming Soon)</div>
+        element: <MartyrsManagementPage />
+      },
+      {
+        path: "martyrs/new",
+        element: <MartyrFormPage />
+      },
+      {
+        path: "martyrs/:id/edit",
+        element: <MartyrFormPage />
       },
       { 
         path: "memories", 
