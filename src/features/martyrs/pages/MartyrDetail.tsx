@@ -8,10 +8,12 @@ import { MartyrProfile } from '@/features/martyrs/components/MartyrProfile';
 import { TributeWall } from '@/features/martyrs/components/TributeWall';
 import { MemorialSection } from '@/features/martyrs/components/MemorialSection';
 import { toast } from 'sonner';
+import { useDirectionalArrow } from '@/shared/hooks/useArrow';
 
 export function MartyrDetail() {
   const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
+  const BackArrow = useDirectionalArrow('back');
   const { martyr, memories, isLoading, isError } = useMartyrDetail();
   const { candleLit, optimisticCandles, lightCandle } = useCandleState(martyr?.id);
 
