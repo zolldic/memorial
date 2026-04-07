@@ -13,6 +13,8 @@ export interface Memory {
   type: MemoryType;
   contentEn: string;
   contentAr: string;
+  photoUrl?: string;
+  audioUrl?: string;
   date: string;
   approved: boolean;
 }

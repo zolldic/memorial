@@ -3,6 +3,7 @@ import { router } from "@/app/routes";
 import { LanguageProvider } from "@/app/providers/LanguageProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { AuthProvider } from "@/features/admin/auth/AuthContext";
 import "@/i18n";
 
 const queryClient = new QueryClient({
@@ -20,9 +21,11 @@ export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <LanguageProvider>
-          <RouterProvider router={router} />
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <RouterProvider router={router} />
+          </LanguageProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

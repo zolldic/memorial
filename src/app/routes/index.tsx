@@ -3,6 +3,10 @@ import { createBrowserRouter } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Root } from "@/shared/components/layout/Root";
 import { Home } from "@/features/home/pages/Home";
+import { LoginPage } from "@/features/admin/auth/LoginPage";
+import { ProtectedRoute } from "@/features/admin/auth/ProtectedRoute";
+import { AdminLayout } from "@/features/admin/dashboard/AdminLayout";
+import { DashboardPage } from "@/features/admin/dashboard/DashboardPage";
 
 // Lazy load heavy routes
 const About = lazy(() => import("@/features/core/pages/About").then(m => ({ default: m.About })));
@@ -55,6 +59,29 @@ export const router = createBrowserRouter([
       { 
         path: "*", 
         element: <Suspense fallback={<PageLoader />}><NotFound /></Suspense>
+      },
+    ],
+  },
+  {
+    path: "/admin/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { 
+        path: "martyrs", 
+        element: <div className="p-8">Martyrs Management (Coming Soon)</div>
+      },
+      { 
+        path: "memories", 
+        element: <div className="p-8">Pending Memories (Coming Soon)</div>
       },
     ],
   },

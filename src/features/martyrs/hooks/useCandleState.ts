@@ -1,51 +1,54 @@
 import { useState, useEffect } from 'react';
-
-const CANDLE_STORAGE_KEY = 'memorial-candles-lit';
+import { candleService } from '@/features/martyrs/services/candleService';
+import { toast } from 'sonner';
 
 export function useCandleState(martyrId: string | undefined) {
   const [candleLit, setCandleLit] = useState(false);
   const [optimisticCandles, setOptimisticCandles] = useState(0);
+  const [isLighting, setIsLighting] = useState(false);
 
-  // Load candle state from localStorage on mount
   useEffect(() => {
     if (!martyrId) return;
-    
-    try {
-      const stored = localStorage.getItem(CANDLE_STORAGE_KEY);
-      if (stored) {
-        const litCandles = JSON.parse(stored) as string[];
-        if (litCandles.includes(martyrId)) {
-          setCandleLit(true);
-          setOptimisticCandles(1);
-        }
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
+
+    // Check if candle already lit
+    candleService.hasLitCandle(martyrId).then(hasLit => {
+      setCandleLit(hasLit);
+      if (hasLit) setOptimisticCandles(1);
+    });
   }, [martyrId]);
 
-  const lightCandle = () => {
-    if (!martyrId || candleLit) return;
+  const lightCandle = async () => {
+    if (!martyrId || candleLit || isLighting) return;
+
+    setIsLighting(true);
 
     try {
-      const stored = localStorage.getItem(CANDLE_STORAGE_KEY);
-      const litCandles = stored ? (JSON.parse(stored) as string[]) : [];
-      
-      if (!litCandles.includes(martyrId)) {
-        litCandles.push(martyrId);
-        localStorage.setItem(CANDLE_STORAGE_KEY, JSON.stringify(litCandles));
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
+      const result = await candleService.lightCandle(martyrId);
 
-    setOptimisticCandles(1);
-    setCandleLit(true);
+      if (result.success) {
+        setCandleLit(true);
+        setOptimisticCandles(1);
+        toast.success('Candle lit in remembrance');
+      } else {
+        if (result.error?.includes('Already lit')) {
+          setCandleLit(true);
+          setOptimisticCandles(1);
+        } else {
+          toast.error('Could not light candle. Please try again.');
+        }
+      }
+    } catch (err) {
+      console.error('Error lighting candle:', err);
+      toast.error('Could not light candle. Please try again.');
+    } finally {
+      setIsLighting(false);
+    }
   };
 
   return {
     candleLit,
     optimisticCandles,
-    lightCandle
+    isLighting,
+    lightCandle,
   };
 }
