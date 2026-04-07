@@ -116,7 +116,7 @@ export function PendingMemoriesPage() {
                       <div className="flex items-center gap-4 mt-2 text-sm text-neutral-600">
                         <span className="flex items-center gap-1">
                           <User size={14} />
-                          {memory.author}
+                          {memory.authorName}
                         </span>
                         <span className="flex items-center gap-1">
                           <Heart size={14} />
@@ -124,7 +124,7 @@ export function PendingMemoriesPage() {
                         </span>
                         <span className="flex items-center gap-1">
                           <Calendar size={14} />
-                          {format(new Date(memory.createdAt), 'MMM d, yyyy')}
+                          {format(new Date(memory.submittedAt), 'MMM d, yyyy')}
                         </span>
                       </div>
                       {(memory.photoUrl || memory.audioUrl) && (

@@ -4,13 +4,14 @@ export interface PendingMemory {
   id: string;
   martyrId: string;
   martyrName: { en: string; ar: string };
-  author: string;
+  authorName: string;
   relationship: string;
+  type: string;
   contentEn: string;
   contentAr: string;
   photoUrl?: string;
   audioUrl?: string;
-  createdAt: string;
+  submittedAt: string;
 }
 
 export async function getPendingMemories(): Promise<PendingMemory[]> {
@@ -19,11 +20,12 @@ export async function getPendingMemories(): Promise<PendingMemory[]> {
     .select(`
       id,
       martyr_id,
-      author,
+      author_name,
       relationship,
+      type,
       photo_url,
       audio_url,
-      created_at,
+      submitted_at,
       memory_translations (
         language,
         content
@@ -37,7 +39,7 @@ export async function getPendingMemories(): Promise<PendingMemory[]> {
       )
     `)
     .eq('approved', false)
-    .order('created_at', { ascending: false });
+    .order('submitted_at', { ascending: false });
 
   if (error) throw error;
 
@@ -52,13 +54,14 @@ export async function getPendingMemories(): Promise<PendingMemory[]> {
         en: martyrTranslations.find((t: any) => t.language === 'en')?.name || '',
         ar: martyrTranslations.find((t: any) => t.language === 'ar')?.name || '',
       },
-      author: memory.author,
+      authorName: memory.author_name,
       relationship: memory.relationship,
+      type: memory.type,
       contentEn: translations.find((t: any) => t.language === 'en')?.content || '',
       contentAr: translations.find((t: any) => t.language === 'ar')?.content || '',
       photoUrl: memory.photo_url,
       audioUrl: memory.audio_url,
-      createdAt: memory.created_at,
+      submittedAt: memory.submitted_at,
     };
   });
 }
