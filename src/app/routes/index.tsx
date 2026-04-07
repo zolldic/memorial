@@ -7,6 +7,7 @@ import { LoginPage } from "@/features/admin/auth/LoginPage";
 import { ProtectedRoute } from "@/features/admin/auth/ProtectedRoute";
 import { AdminLayout } from "@/features/admin/dashboard/AdminLayout";
 import { DashboardPage } from "@/features/admin/dashboard/DashboardPage";
+import { PendingMemoriesPage } from "@/features/admin/memories/PendingMemoriesPage";
 
 // Lazy load heavy routes
 const About = lazy(() => import("@/features/core/pages/About").then(m => ({ default: m.About })));
@@ -81,7 +82,7 @@ export const router = createBrowserRouter([
       },
       { 
         path: "memories", 
-        element: <div className="p-8">Pending Memories (Coming Soon)</div>
+        element: <PendingMemoriesPage />
       },
     ],
   },
