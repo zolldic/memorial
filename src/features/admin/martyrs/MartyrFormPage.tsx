@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useMartyrForEdit, useCreateMartyr, useUpdateMartyr, useUploadMartyrImage } from './useMartyrsAdmin';
 import { MartyrFormData } from './martyrsService';
 import { ArrowLeft, Upload, X } from 'lucide-react';

@@ -1,6 +1,8 @@
-import { Camera, Mic, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Martyr, Language } from '@/shared/types';
 import { useTranslation } from 'react-i18next';
+import { PhotoUpload } from '@/features/memories/components/upload/PhotoUpload';
+import { AudioRecorder } from '@/features/memories/components/upload/AudioRecorder';
 
 type MemoryType = "story" | "photo" | "voice";
 
@@ -12,6 +14,12 @@ interface WriteMemoryStepProps {
   setAuthorName: (name: string) => void;
   content: string;
   setContent: (content: string) => void;
+  photoUrl?: string;
+  setPhotoUrl: (url: string | undefined) => void;
+  audioUrl?: string;
+  setAudioUrl: (url: string | undefined) => void;
+  isSubmitting: boolean;
+  canSubmit: boolean;
   onBack: () => void;
   onSubmit: () => void;
 }
@@ -24,6 +32,12 @@ export function WriteMemoryStep({
   setAuthorName,
   content,
   setContent,
+  photoUrl,
+  setPhotoUrl,
+  audioUrl,
+  setAudioUrl,
+  isSubmitting,
+  canSubmit,
   onBack,
   onSubmit,
 }: WriteMemoryStepProps) {
@@ -72,14 +86,12 @@ export function WriteMemoryStep({
 
       {memoryType === "photo" && (
         <div className="mb-6">
-          <div className="border-2 border-dashed border-border p-12 text-center hover:bg-muted transition-colors duration-500 ease-out cursor-pointer">
-            <Camera size={32} strokeWidth={1} className="mx-auto mb-4 text-muted-foreground" />
-            <p className="font-body italic text-muted-foreground mb-2">
-              {t("shareMemory.photoUploadTitle")}
-            </p>
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              {t("shareMemory.photoUploadLimits")}
-            </p>
+          <div className="mb-4">
+            <PhotoUpload
+              initialUrl={photoUrl}
+              onPhotoUploaded={(url) => setPhotoUrl(url)}
+              onPhotoRemoved={() => setPhotoUrl(undefined)}
+            />
           </div>
           <textarea
             rows={3}
@@ -93,16 +105,11 @@ export function WriteMemoryStep({
 
       {memoryType === "voice" && (
         <div className="mb-6">
-          <div className="border-2 border-border p-8 text-center bg-background">
-            <div className="w-16 h-16 border-2 border-border mx-auto flex items-center justify-center mb-4 hover:bg-foreground hover:text-background transition-colors duration-500 ease-out cursor-pointer">
-              <Mic size={24} strokeWidth={1.5} />
-            </div>
-            <p className="font-body italic text-muted-foreground mb-2">
-              {t("shareMemory.voiceUploadTitle")}
-            </p>
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              {t("shareMemory.voiceUploadLimits")}
-            </p>
+          <div className="mb-4">
+            <AudioRecorder
+              onAudioUploaded={(url) => setAudioUrl(url)}
+              onAudioRemoved={() => setAudioUrl(undefined)}
+            />
           </div>
           <textarea
             rows={3}
@@ -136,10 +143,12 @@ export function WriteMemoryStep({
         </button>
         <button
           onClick={onSubmit}
-          disabled={memoryType === "story" && !content.trim()}
+          disabled={!canSubmit || isSubmitting}
           className="bg-foreground text-background px-8 py-4 font-body hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring transition-colors disabled:opacity-30 disabled:pointer-events-none inline-flex items-center gap-3"
         >
-          {t("shareMemory.submitMemory")}
+          {isSubmitting
+            ? t("shareMemory.submitting", { defaultValue: "Submitting..." })
+            : t("shareMemory.submitMemory")}
           <Check size={16} strokeWidth={1.5} />
         </button>
       </div>

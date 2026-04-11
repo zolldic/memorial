@@ -16,6 +16,8 @@ export function useShareMemoryForm() {
   const [relationship, setRelationship] = useState<Relationship>("stranger");
   const [authorName, setAuthorName] = useState("");
   const [content, setContent] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
+  const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,8 +30,16 @@ export function useShareMemoryForm() {
     martyrsData.find((m) => m.id === selectedMartyrId), 
   [selectedMartyrId]);
 
+  const canSubmit = useMemo(() => {
+    if (!selectedMartyrId) return false;
+    if (memoryType === "story") return content.trim().length > 0;
+    if (memoryType === "photo") return Boolean(photoUrl);
+    if (memoryType === "voice") return Boolean(audioUrl);
+    return false;
+  }, [selectedMartyrId, memoryType, content, photoUrl, audioUrl]);
+
   const handleSubmit = async () => {
-    if (!selectedMartyrId || !content.trim()) return;
+    if (!canSubmit || !selectedMartyrId) return;
     
     setIsSubmitting(true);
 
@@ -39,8 +49,9 @@ export function useShareMemoryForm() {
         authorName: authorName || 'Anonymous',
         relationship,
         type: memoryType,
-        contentEn: content, // For now, submit in one language
-        // In production, you'd detect language or ask user
+        contentEn: content,
+        photoUrl,
+        audioUrl,
       });
 
       if (result.success) {
@@ -65,6 +76,8 @@ export function useShareMemoryForm() {
     setRelationship("stranger");
     setAuthorName("");
     setContent("");
+    setPhotoUrl(undefined);
+    setAudioUrl(undefined);
     setSubmitted(false);
     setIsSubmitting(false);
   };
@@ -84,6 +97,11 @@ export function useShareMemoryForm() {
     setAuthorName,
     content,
     setContent,
+    photoUrl,
+    setPhotoUrl,
+    audioUrl,
+    setAudioUrl,
+    canSubmit,
     submitted,
     isSubmitting,
     filteredMartyrs,

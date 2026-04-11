@@ -19,6 +19,16 @@ export const memoryService = {
    */
   submitMemory: async (params: SubmitMemoryParams): Promise<{ success: boolean; error?: string }> => {
     try {
+      if (params.type === 'story' && !params.contentEn?.trim() && !params.contentAr?.trim()) {
+        return { success: false, error: 'Story text is required.' };
+      }
+      if (params.type === 'photo' && !params.photoUrl) {
+        return { success: false, error: 'A photo is required for photo memories.' };
+      }
+      if (params.type === 'voice' && !params.audioUrl) {
+        return { success: false, error: 'Audio is required for voice memories.' };
+      }
+
       // Convert to database format
       const dbData = frontendToDbMemory({
         martyrId: params.martyrId,
@@ -32,12 +42,25 @@ export const memoryService = {
         approved: false,
       } as Partial<Memory>);
 
+      const insertMemoryWithRetry = async (retries = 2) => {
+        let lastError: unknown;
+        for (let attempt = 0; attempt <= retries; attempt += 1) {
+          const { data, error } = await supabase
+            .from('memories')
+            .insert(dbData.memory)
+            .select()
+            .single();
+          if (!error) return { data, error: null };
+          lastError = error;
+          if (attempt < retries) {
+            await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+          }
+        }
+        return { data: null, error: lastError as { message?: string } };
+      };
+
       // Insert memory
-      const { data: memoryData, error: memoryError } = await supabase
-        .from('memories')
-        .insert(dbData.memory)
-        .select()
-        .single();
+      const { data: memoryData, error: memoryError } = await insertMemoryWithRetry();
 
       if (memoryError) {
         console.error('Error inserting memory:', memoryError);
@@ -51,9 +74,22 @@ export const memoryService = {
       }));
 
       if (translationsToInsert.length > 0) {
-        const { error: translationError } = await supabase
-          .from('memory_translations')
-          .insert(translationsToInsert);
+        const insertTranslationsWithRetry = async (retries = 1) => {
+          let lastError: unknown;
+          for (let attempt = 0; attempt <= retries; attempt += 1) {
+            const { error } = await supabase
+              .from('memory_translations')
+              .insert(translationsToInsert);
+            if (!error) return null;
+            lastError = error;
+            if (attempt < retries) {
+              await new Promise((resolve) => setTimeout(resolve, 400));
+            }
+          }
+          return lastError as { message?: string };
+        };
+
+        const translationError = await insertTranslationsWithRetry();
 
         if (translationError) {
           console.error('Error inserting translations:', translationError);

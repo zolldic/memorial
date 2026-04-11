@@ -15,18 +15,12 @@ export function usePhotoUpload() {
     // Validation
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      return { 
-        success: false, 
-        error: 'Invalid file type. Please upload JPEG, PNG, or WebP images.' 
-      };
+      return { success: false, error: 'invalid-type' };
     }
 
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      return { 
-        success: false, 
-        error: 'File too large. Maximum size is 5MB.' 
-      };
+      return { success: false, error: 'file-too-large' };
     }
 
     setUploading(true);
@@ -62,10 +56,7 @@ export function usePhotoUpload() {
       return { success: true, url: data.publicUrl };
     } catch (err) {
       console.error('Error uploading photo:', err);
-      return { 
-        success: false, 
-        error: 'Failed to upload photo. Please try again.' 
-      };
+      return { success: false, error: 'upload-failed' };
     } finally {
       setUploading(false);
       setTimeout(() => setProgress(0), 1000);

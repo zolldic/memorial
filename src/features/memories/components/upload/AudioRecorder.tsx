@@ -2,6 +2,7 @@ import { useAudioRecorder } from './useAudioRecorder';
 import { Mic, Square, Play, Pause, RotateCcw, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface AudioRecorderProps {
   onAudioUploaded: (url: string) => void;
@@ -9,6 +10,7 @@ interface AudioRecorderProps {
 }
 
 export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorderProps) {
+  const { t } = useTranslation('dashboard');
   const {
     isRecording,
     isPaused,
@@ -30,6 +32,10 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
 
   const handleUpload = async () => {
     if (!audioBlob) return;
+    if (audioBlob.size > 25 * 1024 * 1024) {
+      setUploadError(t('shareMemory.audioTooLarge', { defaultValue: 'Audio is too large. Maximum size is 25MB.' }));
+      return;
+    }
 
     setUploading(true);
     setUploadError('');
@@ -54,7 +60,7 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
       onAudioUploaded(data.publicUrl);
     } catch (err) {
       console.error('Error uploading audio:', err);
-      setUploadError('Failed to upload audio. Please try again.');
+      setUploadError(t('shareMemory.audioUploadFailed', { defaultValue: 'Failed to upload audio. Please try again.' }));
     } finally {
       setUploading(false);
     }
@@ -77,7 +83,9 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse" />
               <span className="text-sm font-medium text-neutral-700">
-                {isPaused ? 'Paused' : 'Recording'}
+                {isPaused
+                  ? t('shareMemory.recordingPaused', { defaultValue: 'Paused' })
+                  : t('shareMemory.recordingActive', { defaultValue: 'Recording' })}
               </span>
             </div>
           </div>
@@ -104,7 +112,7 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
             </div>
             {durationPercent >= 90 && (
               <p className="text-xs text-red-600 mt-1">
-                Approaching maximum duration
+                {t('shareMemory.approachingMaxDuration', { defaultValue: 'Approaching maximum duration' })}
               </p>
             )}
           </div>
@@ -114,7 +122,7 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
         {audioUrl && !isRecording && (
           <div className="mb-6">
             <audio controls className="w-full" src={audioUrl}>
-              Your browser does not support audio playback.
+              {t('shareMemory.audioUnsupported', { defaultValue: 'Your browser does not support audio playback.' })}
             </audio>
           </div>
         )}
@@ -128,7 +136,7 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
               aria-label="Start recording"
             >
               <Mic size={20} />
-              Start Recording
+              {t('shareMemory.startRecording', { defaultValue: 'Start Recording' })}
             </button>
           )}
 
@@ -167,11 +175,11 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
               <button
                 onClick={handleReset}
                 className="flex items-center gap-2 px-6 py-3 border-2 border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
-                disabled={uploading}
-              >
-                <RotateCcw size={18} />
-                Re-record
-              </button>
+                  disabled={uploading}
+                >
+                  <RotateCcw size={18} />
+                  {t('shareMemory.reRecord', { defaultValue: 'Re-record' })}
+                </button>
 
               <button
                 onClick={handleUpload}
@@ -181,12 +189,12 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
                 {uploading ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Uploading...
+                    {t('shareMemory.uploading', { defaultValue: 'Uploading...' })}
                   </>
                 ) : (
                   <>
                     <Upload size={18} />
-                    Upload
+                    {t('shareMemory.uploadAudio', { defaultValue: 'Upload' })}
                   </>
                 )}
               </button>
@@ -205,12 +213,14 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
       {/* Instructions */}
       {!isRecording && !audioUrl && (
         <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
-          <p className="font-medium mb-1">Recording Tips:</p>
+          <p className="font-medium mb-1">
+            {t('shareMemory.recordingTips', { defaultValue: 'Recording Tips:' })}
+          </p>
           <ul className="list-disc list-inside space-y-1 text-xs">
-            <li>Maximum recording time: 5 minutes</li>
-            <li>Find a quiet place for best quality</li>
-            <li>Allow microphone access when prompted</li>
-            <li>Speak clearly and at a normal pace</li>
+            <li>{t('shareMemory.recordingTipMax', { defaultValue: 'Maximum recording time: 5 minutes' })}</li>
+            <li>{t('shareMemory.recordingTipQuiet', { defaultValue: 'Find a quiet place for best quality' })}</li>
+            <li>{t('shareMemory.recordingTipPermission', { defaultValue: 'Allow microphone access when prompted' })}</li>
+            <li>{t('shareMemory.recordingTipSpeak', { defaultValue: 'Speak clearly and at a normal pace' })}</li>
           </ul>
         </div>
       )}

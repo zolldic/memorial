@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, Outlet } from 'react-router';
 import { useAuth } from '../auth/AuthContext';
 import {
   LayoutDashboard,

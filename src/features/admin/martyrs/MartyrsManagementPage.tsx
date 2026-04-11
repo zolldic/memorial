@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useMartyrsAdmin, useDeleteMartyr } from './useMartyrsAdmin';
 import { Search, Plus, Edit2, Trash2, Calendar, User, Flame } from 'lucide-react';
 import { format } from 'date-fns';

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useRef, useState } from "react";
 import { useLanguage } from "@/app/providers/LanguageProvider";
 import { User, Users, Eye } from "lucide-react";
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,8 @@ interface TributeWallProps {
 export function TributeWall({ martyrId, memories }: TributeWallProps) {
   const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
+  const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
+  const audioRefs = useRef<Record<string, HTMLAudioElement | null>>({});
   
   const relationshipIcons: Record<string, typeof User> = {
     family: Users,
@@ -20,6 +23,14 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
   };
 
   if (memories.length === 0) return null;
+
+  const pauseOtherAudio = (activeId: string) => {
+    Object.entries(audioRefs.current).forEach(([id, audio]) => {
+      if (id !== activeId && audio && !audio.paused) {
+        audio.pause();
+      }
+    });
+  };
 
   return (
     <section className="mt-8">
@@ -41,8 +52,42 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
               className="border-e border-b border-border/70 p-7 md:p-8 bg-background relative"
             >
               <p className="font-body text-base md:text-lg leading-loose text-foreground mb-6">
-                {lang === "en" ? memory.contentEn : memory.contentAr}
+                {(lang === "en" ? memory.contentEn : memory.contentAr) ||
+                  t("martyrPage.mediaMemoryNoText", { defaultValue: "Shared with media only." })}
               </p>
+
+              {memory.photoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setLightboxPhoto(memory.photoUrl ?? null)}
+                  className="mb-5 block text-left"
+                  aria-label={t("martyrPage.viewFullImage", { defaultValue: "View full image" })}
+                >
+                  <img
+                    src={memory.photoUrl}
+                    alt={t("martyrPage.memoryPhotoAlt", { defaultValue: "Shared memory photo" })}
+                    loading="lazy"
+                    className="w-full max-h-72 object-cover border border-border/70 hover:opacity-95 transition-opacity"
+                  />
+                </button>
+              )}
+
+              {memory.audioUrl && (
+                <div className="mb-5">
+                  <audio
+                    controls
+                    className="w-full"
+                    ref={(el) => {
+                      audioRefs.current[memory.id] = el;
+                    }}
+                    onPlay={() => pauseOtherAudio(memory.id)}
+                  >
+                    <source src={memory.audioUrl} type="audio/webm" />
+                    <source src={memory.audioUrl} type="audio/mp4" />
+                    {t("martyrPage.audioUnsupported", { defaultValue: "Your browser does not support audio playback." })}
+                  </audio>
+                </div>
+              )}
 
               <div className="flex items-center justify-between pt-4 border-t border-border/70">
                 <div className="flex items-center gap-3">
@@ -77,6 +122,21 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
           {t("martyrPage.addYourMemory")}
         </Link>
       </div>
+
+      {lightboxPhoto && (
+        <button
+          type="button"
+          onClick={() => setLightboxPhoto(null)}
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          aria-label={t("martyrPage.closeImageViewer", { defaultValue: "Close image viewer" })}
+        >
+          <img
+            src={lightboxPhoto}
+            alt={t("martyrPage.memoryPhotoAlt", { defaultValue: "Shared memory photo" })}
+            className="max-w-full max-h-full object-contain"
+          />
+        </button>
+      )}
     </section>
   );
 }

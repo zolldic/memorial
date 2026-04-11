@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePhotoUpload } from './usePhotoUpload';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { X, Image as ImageIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface PhotoUploadProps {
   onPhotoUploaded: (url: string) => void;
@@ -9,14 +10,26 @@ interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: PhotoUploadProps) {
+  const { t } = useTranslation('dashboard');
   const { uploadPhoto, uploading, progress } = usePhotoUpload();
   const [preview, setPreview] = useState<string>(initialUrl || '');
   const [error, setError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+  const lastFileSignatureRef = useRef<string>('');
+
+  useEffect(() => {
+    setPreview(initialUrl || '');
+  }, [initialUrl]);
 
   const handleFile = async (file: File) => {
     setError('');
+    const signature = `${file.name}-${file.size}-${file.lastModified}`;
+    if (signature === lastFileSignatureRef.current) {
+      setError(t('shareMemory.duplicateFile', { defaultValue: 'You already selected this file.' }));
+      return;
+    }
+    lastFileSignatureRef.current = signature;
     
     // Create preview
     const reader = new FileReader();
@@ -31,7 +44,12 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
     if (result.success && result.url) {
       onPhotoUploaded(result.url);
     } else {
-      setError(result.error || 'Upload failed');
+      const mappedError = result.error === 'invalid-type'
+        ? t('shareMemory.invalidPhotoType', { defaultValue: 'Invalid file type. Please upload JPEG, PNG, or WebP.' })
+        : result.error === 'file-too-large'
+          ? t('shareMemory.photoTooLarge', { defaultValue: 'Photo is too large. Maximum size is 5MB.' })
+          : t('shareMemory.photoUploadFailed', { defaultValue: 'Failed to upload photo. Please try again.' });
+      setError(mappedError);
       setPreview('');
     }
   };
@@ -69,6 +87,7 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
   const handleRemove = () => {
     setPreview('');
     setError('');
+    lastFileSignatureRef.current = '';
     onPhotoRemoved();
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -93,7 +112,7 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
           `}
           role="button"
           tabIndex={0}
-          aria-label="Upload photo"
+          aria-label={t('shareMemory.uploadPhotoAria', { defaultValue: 'Upload photo' })}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               fileInputRef.current?.click();
@@ -104,7 +123,9 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
           
           {uploading ? (
             <div className="space-y-3">
-              <p className="text-sm font-medium text-neutral-700">Uploading...</p>
+              <p className="text-sm font-medium text-neutral-700">
+                {t('shareMemory.uploading', { defaultValue: 'Uploading...' })}
+              </p>
               <div className="w-full max-w-xs mx-auto bg-neutral-200 rounded-full h-2 overflow-hidden">
                 <div
                   className="bg-primary h-full transition-all duration-300"
@@ -115,11 +136,11 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
             </div>
           ) : (
             <>
-              <p className="text-base font-medium text-neutral-900 mb-1">
-                Drop your photo here or click to browse
+                <p className="text-base font-medium text-neutral-900 mb-1">
+                {t('shareMemory.photoDropHint', { defaultValue: 'Drop your photo here or click to browse' })}
               </p>
               <p className="text-sm text-neutral-500">
-                JPEG, PNG, or WebP • Max 5MB
+                {t('shareMemory.photoFileTypes', { defaultValue: 'JPEG, PNG, or WebP • Max 5MB' })}
               </p>
             </>
           )}
@@ -130,21 +151,21 @@ export function PhotoUpload({ onPhotoUploaded, onPhotoRemoved, initialUrl }: Pho
             accept="image/jpeg,image/jpg,image/png,image/webp"
             onChange={handleFileSelect}
             className="hidden"
-            aria-label="Select photo file"
+            aria-label={t('shareMemory.selectPhotoAria', { defaultValue: 'Select photo file' })}
           />
         </div>
       ) : (
         <div className="relative inline-block">
           <img
             src={preview}
-            alt="Uploaded memory"
+            alt={t('shareMemory.uploadedMemoryPhoto', { defaultValue: 'Uploaded memory photo' })}
             className="max-w-full h-auto max-h-64 rounded-xl border-2 border-neutral-200"
           />
           <button
             type="button"
             onClick={handleRemove}
             className="absolute -top-3 -right-3 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg"
-            aria-label="Remove photo"
+            aria-label={t('shareMemory.removePhoto', { defaultValue: 'Remove photo' })}
           >
             <X size={18} />
           </button>
