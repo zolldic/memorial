@@ -14,6 +14,7 @@ export interface Memory {
   contentEn: string;
   contentAr: string;
   photoUrl?: string;
+  photoUrls?: string[];
   audioUrl?: string;
   date: string;
   approved: boolean;

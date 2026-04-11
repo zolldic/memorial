@@ -16,7 +16,7 @@ export function useShareMemoryForm() {
   const [relationship, setRelationship] = useState<Relationship>("stranger");
   const [authorName, setAuthorName] = useState("");
   const [content, setContent] = useState("");
-  const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [audioUrl, setAudioUrl] = useState<string | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,10 +33,10 @@ export function useShareMemoryForm() {
   const canSubmit = useMemo(() => {
     if (!selectedMartyrId) return false;
     if (memoryType === "story") return content.trim().length > 0;
-    if (memoryType === "photo") return Boolean(photoUrl);
+    if (memoryType === "photo") return photoUrls.length > 0;
     if (memoryType === "voice") return Boolean(audioUrl);
     return false;
-  }, [selectedMartyrId, memoryType, content, photoUrl, audioUrl]);
+  }, [selectedMartyrId, memoryType, content, photoUrls, audioUrl]);
 
   const handleSubmit = async () => {
     if (!canSubmit || !selectedMartyrId) return;
@@ -50,7 +50,7 @@ export function useShareMemoryForm() {
         relationship,
         type: memoryType,
         contentEn: content,
-        photoUrl,
+        photoUrls,
         audioUrl,
       });
 
@@ -76,7 +76,7 @@ export function useShareMemoryForm() {
     setRelationship("stranger");
     setAuthorName("");
     setContent("");
-    setPhotoUrl(undefined);
+    setPhotoUrls([]);
     setAudioUrl(undefined);
     setSubmitted(false);
     setIsSubmitting(false);
@@ -97,8 +97,8 @@ export function useShareMemoryForm() {
     setAuthorName,
     content,
     setContent,
-    photoUrl,
-    setPhotoUrl,
+    photoUrls,
+    setPhotoUrls,
     audioUrl,
     setAudioUrl,
     canSubmit,

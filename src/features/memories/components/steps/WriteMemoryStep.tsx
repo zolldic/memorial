@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 import { Martyr, Language } from '@/shared/types';
 import { useTranslation } from 'react-i18next';
-import { PhotoUpload } from '@/features/memories/components/upload/PhotoUpload';
+import { MultiPhotoUpload } from '@/features/memories/components/upload/MultiPhotoUpload';
 import { AudioRecorder } from '@/features/memories/components/upload/AudioRecorder';
 
 type MemoryType = "story" | "photo" | "voice";
@@ -14,8 +14,8 @@ interface WriteMemoryStepProps {
   setAuthorName: (name: string) => void;
   content: string;
   setContent: (content: string) => void;
-  photoUrl?: string;
-  setPhotoUrl: (url: string | undefined) => void;
+  photoUrls: string[];
+  setPhotoUrls: (urls: string[]) => void;
   audioUrl?: string;
   setAudioUrl: (url: string | undefined) => void;
   isSubmitting: boolean;
@@ -32,8 +32,8 @@ export function WriteMemoryStep({
   setAuthorName,
   content,
   setContent,
-  photoUrl,
-  setPhotoUrl,
+  photoUrls,
+  setPhotoUrls,
   audioUrl,
   setAudioUrl,
   isSubmitting,
@@ -87,10 +87,9 @@ export function WriteMemoryStep({
       {memoryType === "photo" && (
         <div className="mb-6">
           <div className="mb-4">
-            <PhotoUpload
-              initialUrl={photoUrl}
-              onPhotoUploaded={(url) => setPhotoUrl(url)}
-              onPhotoRemoved={() => setPhotoUrl(undefined)}
+            <MultiPhotoUpload
+              initialUrls={photoUrls}
+              onPhotosChanged={setPhotoUrls}
             />
           </div>
           <textarea

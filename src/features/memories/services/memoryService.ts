@@ -10,6 +10,7 @@ export interface SubmitMemoryParams {
   contentEn?: string;
   contentAr?: string;
   photoUrl?: string;
+  photoUrls?: string[];
   audioUrl?: string;
 }
 
@@ -23,7 +24,9 @@ export const memoryService = {
         return { success: false, error: 'Story text is required.' };
       }
       if (params.type === 'photo' && !params.photoUrl) {
-        return { success: false, error: 'A photo is required for photo memories.' };
+        if (!params.photoUrls || params.photoUrls.length === 0) {
+          return { success: false, error: 'At least one photo is required for photo memories.' };
+        }
       }
       if (params.type === 'voice' && !params.audioUrl) {
         return { success: false, error: 'Audio is required for voice memories.' };
@@ -37,7 +40,8 @@ export const memoryService = {
         type: params.type,
         contentEn: params.contentEn || '',
         contentAr: params.contentAr || '',
-        photoUrl: params.photoUrl,
+        photoUrl: params.photoUrl || params.photoUrls?.[0],
+        photoUrls: params.photoUrls,
         audioUrl: params.audioUrl,
         approved: false,
       } as Partial<Memory>);

@@ -8,6 +8,7 @@ export interface DbMemory {
   relationship: Relationship;
   type: MemoryType;
   photo_url: string | null;
+  photo_urls: string[] | null;
   audio_url: string | null;
   approved: boolean;
   submitted_at: string;
@@ -49,7 +50,8 @@ export function dbToFrontendMemory(
     type: dbMemory.type,
     contentEn: enTranslation?.content || '',
     contentAr: arTranslation?.content || '',
-    photoUrl: dbMemory.photo_url || undefined,
+    photoUrl: dbMemory.photo_url || dbMemory.photo_urls?.[0] || undefined,
+    photoUrls: dbMemory.photo_urls || (dbMemory.photo_url ? [dbMemory.photo_url] : []),
     audioUrl: dbMemory.audio_url || undefined,
     date: new Date(dbMemory.submitted_at).toISOString().split('T')[0],
     approved: dbMemory.approved,
@@ -66,7 +68,8 @@ export function frontendToDbMemory(memory: Partial<Memory>) {
       author_name: memory.authorName || 'Anonymous',
       relationship: memory.relationship,
       type: memory.type,
-      photo_url: memory.photoUrl || null,
+      photo_url: memory.photoUrl || memory.photoUrls?.[0] || null,
+      photo_urls: memory.photoUrls || (memory.photoUrl ? [memory.photoUrl] : []),
       audio_url: memory.audioUrl || null,
       approved: false, // Always start unapproved
     },

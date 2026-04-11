@@ -56,20 +56,25 @@ export function TributeWall({ martyrId, memories }: TributeWallProps) {
                   t("martyrPage.mediaMemoryNoText", { defaultValue: "Shared with media only." })}
               </p>
 
-              {memory.photoUrl && (
-                <button
-                  type="button"
-                  onClick={() => setLightboxPhoto(memory.photoUrl ?? null)}
-                  className="mb-5 block text-left"
-                  aria-label={t("martyrPage.viewFullImage", { defaultValue: "View full image" })}
-                >
-                  <img
-                    src={memory.photoUrl}
-                    alt={t("martyrPage.memoryPhotoAlt", { defaultValue: "Shared memory photo" })}
-                    loading="lazy"
-                    className="w-full max-h-72 object-cover border border-border/70 hover:opacity-95 transition-opacity"
-                  />
-                </button>
+              {(memory.photoUrl || (memory.photoUrls && memory.photoUrls.length > 0)) && (
+                <div className="mb-5 grid grid-cols-2 gap-2">
+                  {(memory.photoUrls && memory.photoUrls.length > 0 ? memory.photoUrls : [memory.photoUrl]).map((url, idx) => (
+                    <button
+                      key={`${memory.id}-photo-${idx}`}
+                      type="button"
+                      onClick={() => setLightboxPhoto(url)}
+                      className="block text-left"
+                      aria-label={t("martyrPage.viewFullImage", { defaultValue: "View full image" })}
+                    >
+                      <img
+                        src={url}
+                        alt={t("martyrPage.memoryPhotoAlt", { defaultValue: "Shared memory photo" })}
+                        loading="lazy"
+                        className="w-full h-40 object-cover border border-border/70 hover:opacity-95 transition-opacity"
+                      />
+                    </button>
+                  ))}
+                </div>
               )}
 
               {memory.audioUrl && (

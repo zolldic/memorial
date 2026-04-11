@@ -175,6 +175,8 @@
     "recordingTipMax": "Maximum recording time: 5 minutes",
     "recordingTipQuiet": "Find a quiet place for best quality",
     "recordingTipPermission": "Allow microphone access when prompted",
-    "recordingTipSpeak": "Speak clearly and at a normal pace"
+    "recordingTipSpeak": "Speak clearly and at a normal pace",
+    "multiPhotoHint": "Upload one or more photos",
+    "maxPhotosReached": "Maximum {{count}} photos allowed."
   }
 }

@@ -127,12 +127,12 @@ export function PendingMemoriesPage() {
                           {format(new Date(memory.submittedAt), 'MMM d, yyyy')}
                         </span>
                       </div>
-                      {(memory.photoUrl || memory.audioUrl) && (
+                      {((memory.photoUrls && memory.photoUrls.length > 0) || memory.audioUrl) && (
                         <div className="flex items-center gap-2 mt-2">
-                          {memory.photoUrl && (
+                          {memory.photoUrls && memory.photoUrls.length > 0 && (
                             <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                               <Image size={12} />
-                              Photo
+                              {memory.photoUrls.length > 1 ? `${memory.photoUrls.length} Photos` : 'Photo'}
                             </span>
                           )}
                           {memory.audioUrl && (
@@ -243,17 +243,20 @@ export function PendingMemoriesPage() {
                   </div>
 
                   {/* Media Preview */}
-                  {(memory.photoUrl || memory.audioUrl) && (
+                  {((memory.photoUrls && memory.photoUrls.length > 0) || memory.audioUrl) && (
                     <div className="mt-6 pt-6 border-t border-neutral-200">
                       <h4 className="text-sm font-semibold text-neutral-700 mb-3">Attached Media</h4>
                       <div className="flex gap-4">
-                        {memory.photoUrl && (
-                          <div>
-                            <img
-                              src={memory.photoUrl}
-                              alt="Memory photo"
-                              className="w-32 h-32 object-cover rounded-lg border border-neutral-200"
-                            />
+                        {memory.photoUrls && memory.photoUrls.length > 0 && (
+                          <div className="grid grid-cols-2 gap-2">
+                            {memory.photoUrls.map((photoUrl, idx) => (
+                              <img
+                                key={`${memory.id}-admin-photo-${idx}`}
+                                src={photoUrl}
+                                alt={`Memory photo ${idx + 1}`}
+                                className="w-24 h-24 object-cover rounded-lg border border-neutral-200"
+                              />
+                            ))}
                           </div>
                         )}
                         {memory.audioUrl && (

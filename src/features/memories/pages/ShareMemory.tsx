@@ -86,8 +86,8 @@ export function ShareMemory() {
           setAuthorName={form.setAuthorName}
           content={form.content}
           setContent={form.setContent}
-          photoUrl={form.photoUrl}
-          setPhotoUrl={form.setPhotoUrl}
+          photoUrls={form.photoUrls}
+          setPhotoUrls={form.setPhotoUrls}
           audioUrl={form.audioUrl}
           setAudioUrl={form.setAudioUrl}
           isSubmitting={form.isSubmitting}

@@ -175,6 +175,8 @@
     "recordingTipMax": "الحد الأقصى للتسجيل: 5 دقائق",
     "recordingTipQuiet": "اختر مكانًا هادئًا للحصول على جودة أفضل",
     "recordingTipPermission": "اسمح بالوصول للميكروفون عند الطلب",
-    "recordingTipSpeak": "تحدث بوضوح وبوتيرة طبيعية"
+    "recordingTipSpeak": "تحدث بوضوح وبوتيرة طبيعية",
+    "multiPhotoHint": "ارفع صورة واحدة أو عدة صور",
+    "maxPhotosReached": "الحد الأقصى {{count}} صور."
   }
 }

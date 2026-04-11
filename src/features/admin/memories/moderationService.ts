@@ -10,6 +10,7 @@ export interface PendingMemory {
   contentEn: string;
   contentAr: string;
   photoUrl?: string;
+  photoUrls?: string[];
   audioUrl?: string;
   submittedAt: string;
 }
@@ -24,6 +25,7 @@ export async function getPendingMemories(): Promise<PendingMemory[]> {
       relationship,
       type,
       photo_url,
+      photo_urls,
       audio_url,
       submitted_at,
       memory_translations (
@@ -60,6 +62,7 @@ export async function getPendingMemories(): Promise<PendingMemory[]> {
       contentEn: translations.find((t: any) => t.language === 'en')?.content || '',
       contentAr: translations.find((t: any) => t.language === 'ar')?.content || '',
       photoUrl: memory.photo_url,
+      photoUrls: memory.photo_urls || (memory.photo_url ? [memory.photo_url] : []),
       audioUrl: memory.audio_url,
       submittedAt: memory.submitted_at,
     };

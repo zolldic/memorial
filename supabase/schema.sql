@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS memories (
   relationship TEXT NOT NULL CHECK (relationship IN ('family', 'friend', 'stranger')),
   type TEXT NOT NULL CHECK (type IN ('story', 'photo', 'voice')),
   photo_url TEXT,
+  photo_urls TEXT[] DEFAULT '{}',
   audio_url TEXT,
   approved BOOLEAN DEFAULT FALSE,
   submitted_at TIMESTAMPTZ DEFAULT NOW(),
