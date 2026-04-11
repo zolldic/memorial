@@ -8,16 +8,13 @@
 
 ### Creating the Admin User
 
-Run this command to create the admin user in your local Supabase:
+Run this command:
 
 ```bash
-docker exec -i supabase_db_Memorial psql -U postgres -d postgres < supabase/create-admin-user.sql
+node supabase/create-admin-user.mjs admin@memorial.local admin123
 ```
 
-This will:
-1. Create the user in `auth.users` table
-2. Create the corresponding identity in `auth.identities`
-3. Add the user to `profiles` table with `role='admin'`
+This creates (or reuses) the auth user and ensures the profile role is `admin`.
 
 ### Accessing the Admin Panel
 
@@ -32,7 +29,7 @@ This will:
 
 ## Production Setup
 
-For production, DO NOT use the SQL script. Instead:
+For production, create the auth user in Supabase first, then grant the admin role in `profiles`.
 
 1. Go to Supabase Dashboard → Authentication → Users
 2. Click "Add User" or "Invite"
@@ -41,14 +38,13 @@ For production, DO NOT use the SQL script. Instead:
 5. Manually insert into `profiles` table:
 
 ```sql
-INSERT INTO profiles (id, email, role, created_at, updated_at)
+INSERT INTO profiles (id, email, role, created_at)
 VALUES (
-  '<user-uuid-from-dashboard>',
+  'YOUR_USER_ID',
   'your-admin@example.com',
   'admin',
-  now(),
   now()
-);
+) ON CONFLICT (id) DO UPDATE SET role = 'admin';
 ```
 
 ## Security Notes
@@ -71,8 +67,8 @@ VALUES (
 - Clear browser cookies and try again
 - Check browser console for auth errors
 
-**Password hash issues:**
-- If login fails, you may need to reset the password via Supabase CLI:
+**Password issues:**
+- Re-run the setup script:
   ```bash
-  supabase auth update user admin@memorial.local --password admin123
+  node supabase/create-admin-user.mjs admin@memorial.local admin123
   ```
