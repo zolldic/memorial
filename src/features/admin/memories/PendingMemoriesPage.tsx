@@ -1,65 +1,49 @@
 import { useState } from 'react';
 import { usePendingMemories, useApproveMemory, useRejectMemory, useUpdateTranslation } from './useModerationActions';
-import { CheckCircle, XCircle, Edit2, Save, X, Calendar, User, Heart, Image, Mic } from 'lucide-react';
-import { PendingMemory } from './moderationService';
-import { format } from 'date-fns';
+import { CheckCircle } from 'lucide-react';
+import { ConfirmModal } from '../../core/components/ConfirmModal';
+import { MemoryCard } from './MemoryCard';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export function PendingMemoriesPage() {
-  const { data: memories, isLoading } = usePendingMemories();
+  const { data: memories, isLoading, isError, error, refetch, isFetching } = usePendingMemories();
   const approveMutation = useApproveMemory();
   const rejectMutation = useRejectMemory();
   const updateTranslationMutation = useUpdateTranslation();
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    type: 'approve' | 'reject' | null;
+    memoryId: string | null;
+  }>({ isOpen: false, type: null, memoryId: null });
 
-  const [editingMemory, setEditingMemory] = useState<string | null>(null);
-  const [editedEn, setEditedEn] = useState('');
-  const [editedAr, setEditedAr] = useState('');
-
-  const handleEdit = (memory: PendingMemory) => {
-    setEditingMemory(memory.id);
-    setEditedEn(memory.contentEn);
-    setEditedAr(memory.contentAr);
-  };
-
-  const handleSave = async (memoryId: string) => {
+  const handleSave = async (memoryId: string, editedEn: string, editedAr: string) => {
     const memory = memories?.find(m => m.id === memoryId);
     if (!memory) return;
 
-    // Update both translations
     if (editedEn !== memory.contentEn) {
-      await updateTranslationMutation.mutateAsync({
-        memoryId,
-        language: 'en',
-        content: editedEn,
-      });
+      await updateTranslationMutation.mutateAsync({ memoryId, language: 'en', content: editedEn });
     }
 
     if (editedAr !== memory.contentAr) {
-      await updateTranslationMutation.mutateAsync({
-        memoryId,
-        language: 'ar',
-        content: editedAr,
-      });
+      await updateTranslationMutation.mutateAsync({ memoryId, language: 'ar', content: editedAr });
     }
-
-    setEditingMemory(null);
-  };
-
-  const handleCancel = () => {
-    setEditingMemory(null);
-    setEditedEn('');
-    setEditedAr('');
   };
 
   const handleApprove = (memoryId: string) => {
-    if (confirm('Approve this memory? It will be visible to the public.')) {
-      approveMutation.mutate(memoryId);
-    }
+    setConfirmState({ isOpen: true, type: 'approve', memoryId });
   };
 
   const handleReject = (memoryId: string) => {
-    if (confirm('Reject this memory? This action cannot be undone.')) {
-      rejectMutation.mutate(memoryId);
+    setConfirmState({ isOpen: true, type: 'reject', memoryId });
+  };
+  
+  const handleConfirmAction = () => {
+    if (confirmState.type === 'approve' && confirmState.memoryId) {
+      approveMutation.mutate(confirmState.memoryId);
+    } else if (confirmState.type === 'reject' && confirmState.memoryId) {
+      rejectMutation.mutate(confirmState.memoryId);
     }
+    setConfirmState({ isOpen: false, type: null, memoryId: null });
   };
 
   if (isLoading) {
@@ -69,6 +53,26 @@ export function PendingMemoriesPage() {
           <div className="h-8 w-64 bg-neutral-200 rounded" />
           <div className="h-32 bg-neutral-200 rounded" />
           <div className="h-32 bg-neutral-200 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6 md:p-8">
+        <div className="border-2 border-red-300 bg-red-50 p-6 md:p-8">
+          <h1 className="text-xl font-bold text-red-700 mb-2">Failed to load pending memories</h1>
+          <p className="text-sm text-red-700 mb-4">
+            {getErrorMessage(error, 'An unexpected error occurred while loading pending memories.')}
+          </p>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="px-5 py-2 border-2 border-red-700 text-red-700 font-bold uppercase tracking-wide text-xs hover:bg-red-700 hover:text-white transition-colors disabled:opacity-60"
+          >
+            {isFetching ? 'Retrying...' : 'Retry'}
+          </button>
         </div>
       </div>
     );
@@ -98,185 +102,34 @@ export function PendingMemoriesPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {memories?.map((memory) => {
-            const isEditing = editingMemory === memory.id;
-
-            return (
-              <div
-                key={memory.id}
-                className="bg-white rounded-xl border border-neutral-200 overflow-hidden"
-              >
-                {/* Header */}
-                <div className="bg-neutral-50 px-6 py-4 border-b border-neutral-200">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold text-neutral-900">
-                        {memory.martyrName.en || memory.martyrName.ar}
-                      </h3>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-neutral-600">
-                        <span className="flex items-center gap-1">
-                          <User size={14} />
-                          {memory.authorName}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart size={14} />
-                          {memory.relationship}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {format(new Date(memory.submittedAt), 'MMM d, yyyy')}
-                        </span>
-                      </div>
-                      {((memory.photoUrls && memory.photoUrls.length > 0) || memory.audioUrl) && (
-                        <div className="flex items-center gap-2 mt-2">
-                          {memory.photoUrls && memory.photoUrls.length > 0 && (
-                            <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                              <Image size={12} />
-                              {memory.photoUrls.length > 1 ? `${memory.photoUrls.length} Photos` : 'Photo'}
-                            </span>
-                          )}
-                          {memory.audioUrl && (
-                            <span className="flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                              <Mic size={12} />
-                              Audio
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {!isEditing && (
-                        <>
-                          <button
-                            onClick={() => handleEdit(memory)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Edit translations"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleApprove(memory.id)}
-                            disabled={approveMutation.isPending}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
-                            title="Approve"
-                          >
-                            <CheckCircle size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleReject(memory.id)}
-                            disabled={rejectMutation.isPending}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                            title="Reject"
-                          >
-                            <XCircle size={18} />
-                          </button>
-                        </>
-                      )}
-                      {isEditing && (
-                        <>
-                          <button
-                            onClick={() => handleSave(memory.id)}
-                            disabled={updateTranslationMutation.isPending}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50"
-                            title="Save"
-                          >
-                            <Save size={18} />
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
-                            title="Cancel"
-                          >
-                            <X size={18} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* English */}
-                    <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                        English Content
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={editedEn}
-                          onChange={(e) => setEditedEn(e.target.value)}
-                          className="w-full h-32 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                          placeholder="English translation..."
-                        />
-                      ) : (
-                        <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 min-h-[8rem]">
-                          {memory.contentEn || (
-                            <span className="text-neutral-400 italic">No English translation</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Arabic */}
-                    <div>
-                      <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                        Arabic Content (العربية)
-                      </label>
-                      {isEditing ? (
-                        <textarea
-                          value={editedAr}
-                          onChange={(e) => setEditedAr(e.target.value)}
-                          className="w-full h-32 px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                          placeholder="الترجمة العربية..."
-                          dir="rtl"
-                        />
-                      ) : (
-                        <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 min-h-[8rem]" dir="rtl">
-                          {memory.contentAr || (
-                            <span className="text-neutral-400 italic">لا توجد ترجمة عربية</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Media Preview */}
-                  {((memory.photoUrls && memory.photoUrls.length > 0) || memory.audioUrl) && (
-                    <div className="mt-6 pt-6 border-t border-neutral-200">
-                      <h4 className="text-sm font-semibold text-neutral-700 mb-3">Attached Media</h4>
-                      <div className="flex gap-4">
-                        {memory.photoUrls && memory.photoUrls.length > 0 && (
-                          <div className="grid grid-cols-2 gap-2">
-                            {memory.photoUrls.map((photoUrl, idx) => (
-                              <img
-                                key={`${memory.id}-admin-photo-${idx}`}
-                                src={photoUrl}
-                                alt={`Memory photo ${idx + 1}`}
-                                className="w-24 h-24 object-cover rounded-lg border border-neutral-200"
-                              />
-                            ))}
-                          </div>
-                        )}
-                        {memory.audioUrl && (
-                          <div className="flex-1">
-                            <audio controls className="w-full max-w-md">
-                              <source src={memory.audioUrl} type="audio/webm" />
-                              <source src={memory.audioUrl} type="audio/mp4" />
-                              Your browser does not support audio playback.
-                            </audio>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+          {memories?.map((memory) => (
+            <MemoryCard
+              key={memory.id}
+              memory={memory}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onSave={handleSave}
+              isApproving={approveMutation.isPending}
+              isRejecting={rejectMutation.isPending}
+              isUpdating={updateTranslationMutation.isPending}
+            />
+          ))}
         </div>
       )}
+      
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={confirmState.type === 'approve' ? 'Approve Memory' : 'Reject Memory'}
+        description={
+          confirmState.type === 'approve' 
+            ? 'Are you sure you want to approve this memory? It will become visible to the public immediately.' 
+            : 'Are you sure you want to reject this memory? This action cannot be undone and the content will be deleted.'
+        }
+        confirmLabel={confirmState.type === 'approve' ? 'Approve' : 'Reject'}
+        isDestructive={confirmState.type === 'reject'}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmState({ isOpen: false, type: null, memoryId: null })}
+      />
     </div>
   );
 }

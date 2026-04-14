@@ -6,6 +6,7 @@ import {
   updateMemoryTranslation 
 } from './moderationService';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export function usePendingMemories() {
   return useQuery({
@@ -20,13 +21,19 @@ export function useApproveMemory() {
 
   return useMutation({
     mutationFn: approveMemory,
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to approve memory');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-pending-memories'] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['martyr-detail'] });
       toast.success('Memory approved successfully');
     },
-    onError: () => {
-      toast.error('Failed to approve memory');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to approve memory'));
     },
   });
 }
@@ -36,13 +43,19 @@ export function useRejectMemory() {
 
   return useMutation({
     mutationFn: rejectMemory,
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to reject memory');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-pending-memories'] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['martyr-detail'] });
       toast.success('Memory rejected');
     },
-    onError: () => {
-      toast.error('Failed to reject memory');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to reject memory'));
     },
   });
 }
@@ -60,12 +73,17 @@ export function useUpdateTranslation() {
       language: 'en' | 'ar'; 
       content: string;
     }) => updateMemoryTranslation(memoryId, language, content),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to update translation');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-pending-memories'] });
       toast.success('Translation updated');
     },
-    onError: () => {
-      toast.error('Failed to update translation');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to update translation'));
     },
   });
 }

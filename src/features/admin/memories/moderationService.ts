@@ -1,4 +1,6 @@
 import { supabase } from '@/lib/supabase';
+import { cleanupMemoryMediaFiles, type MemoryMediaRow } from '@/lib/storageCleanup';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export interface PendingMemory {
   id: string;
@@ -80,12 +82,26 @@ export async function approveMemory(memoryId: string): Promise<{ success: boolea
     return { success: true };
   } catch (err) {
     console.error('Error approving memory:', err);
-    return { success: false, error: 'Failed to approve memory' };
+    return { success: false, error: getErrorMessage(err, 'Failed to approve memory') };
   }
 }
 
+
+
 export async function rejectMemory(memoryId: string): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. Fetch memory media to clean up storage
+    const { data: memory } = await supabase
+      .from('memories')
+      .select('photo_url, photo_urls, audio_url')
+      .eq('id', memoryId)
+      .single();
+
+    if (memory) {
+      await cleanupMemoryMediaFiles([memory as MemoryMediaRow]);
+    }
+
+    // 2. Delete the record
     const { error } = await supabase
       .from('memories')
       .delete()
@@ -95,7 +111,7 @@ export async function rejectMemory(memoryId: string): Promise<{ success: boolean
     return { success: true };
   } catch (err) {
     console.error('Error rejecting memory:', err);
-    return { success: false, error: 'Failed to reject memory' };
+    return { success: false, error: getErrorMessage(err, 'Failed to reject memory') };
   }
 }
 
@@ -115,6 +131,6 @@ export async function updateMemoryTranslation(
     return { success: true };
   } catch (err) {
     console.error('Error updating translation:', err);
-    return { success: false, error: 'Failed to update translation' };
+    return { success: false, error: getErrorMessage(err, 'Failed to update translation') };
   }
 }
