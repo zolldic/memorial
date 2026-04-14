@@ -1,8 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useState, useEffect, FormEvent } from 'react';
+import { useNavigate, useParams, Link } from 'react-router';
 import { useMartyrForEdit, useCreateMartyr, useUpdateMartyr, useUploadMartyrImage } from './useMartyrsAdmin';
 import { MartyrFormData } from './martyrsService';
-import { ArrowLeft, Upload, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { toast } from 'sonner';
+import { IdentityStep } from './steps/IdentityStep';
+import { StoryStep } from './steps/StoryStep';
+import { MediaStep } from './steps/MediaStep';
+import { ReviewStep } from './steps/ReviewStep';
+
+const STEPS = ['Identity & Demographics', 'Their Story', 'Media', 'Review'];
 
 export function MartyrFormPage() {
   const navigate = useNavigate();
@@ -13,6 +20,8 @@ export function MartyrFormPage() {
   const createMutation = useCreateMartyr();
   const updateMutation = useUpdateMartyr();
   const uploadMutation = useUploadMartyrImage();
+
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [formData, setFormData] = useState<MartyrFormData>({
     nameEn: '',
@@ -30,7 +39,6 @@ export function MartyrFormPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (existingData) {
@@ -46,12 +54,12 @@ export function MartyrFormPage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      toast.error('Please select an image file');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be less than 5MB');
+      toast.error('Image must be less than 5MB');
       return;
     }
 
@@ -67,23 +75,42 @@ export function MartyrFormPage() {
     setImageFile(null);
     setImagePreview('');
     setFormData({ ...formData, imageUrl: undefined });
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const validateStep = (step: number) => {
+    if (step === 0) {
+      if (!formData.nameEn && !formData.nameAr) return 'At least one name is required';
+      if (!formData.dateOfMartyrdom) return 'Date of martyrdom is required';
+    }
+    return null;
+  };
+
+  const handleNext = () => {
+    const error = validateStep(currentStep);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setCurrentStep(Math.min(currentStep + 1, STEPS.length - 1));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    const error = validateStep(currentStep);
+    if (error) {
+      toast.error(error);
+      return;
+    }
 
     let imageUrl = formData.imageUrl;
 
-    // Upload new image if selected
     if (imageFile) {
       const result = await uploadMutation.mutateAsync(imageFile);
       if (result.success && result.url) {
         imageUrl = result.url;
       } else {
-        return; // Stop if upload failed
+        toast.error('Failed to upload image');
+        return;
       }
     }
 
@@ -91,12 +118,12 @@ export function MartyrFormPage() {
 
     if (isEditing && id) {
       const result = await updateMutation.mutateAsync({ id, data: dataToSubmit });
-      if (result.data?.success !== false) {
+      if (result.success) {
         navigate('/admin/martyrs');
       }
     } else {
       const result = await createMutation.mutateAsync(dataToSubmit);
-      if (result.data?.success !== false) {
+      if (result.success) {
         navigate('/admin/martyrs');
       }
     }
@@ -104,10 +131,10 @@ export function MartyrFormPage() {
 
   if (isEditing && loadingData) {
     return (
-      <div className="p-6 md:p-8">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-64 bg-neutral-200 rounded" />
-          <div className="h-96 bg-neutral-200 rounded" />
+      <div className="p-6 md:p-10 min-h-screen bg-background texture-lines">
+        <div className="animate-pulse space-y-6 max-w-4xl mx-auto">
+          <div className="h-10 w-64 bg-neutral-300 border border-neutral-400" />
+          <div className="h-[600px] bg-neutral-300 border border-neutral-400" />
         </div>
       </div>
     );
@@ -116,261 +143,100 @@ export function MartyrFormPage() {
   const isSubmitting = createMutation.isPending || updateMutation.isPending || uploadMutation.isPending;
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <button
-          onClick={() => navigate('/admin/martyrs')}
-          className="flex items-center gap-2 text-neutral-600 hover:text-neutral-900 mb-4"
-        >
-          <ArrowLeft size={20} />
-          Back to Martyrs
-        </button>
-        <h1 className="text-3xl font-bold text-neutral-900">
-          {isEditing ? 'Edit Martyr' : 'Add New Martyr'}
-        </h1>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Image Upload */}
-        <div className="bg-white rounded-xl p-6 border border-neutral-200">
-          <h2 className="text-lg font-bold text-neutral-900 mb-4">Profile Image</h2>
-          
-          {imagePreview ? (
-            <div className="relative inline-block">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-48 h-48 object-cover rounded-lg border border-neutral-200"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="w-48 h-48 border-2 border-dashed border-neutral-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
+    <div className="p-6 md:p-10 min-h-screen bg-background texture-lines">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <Link
+              to="/admin/martyrs"
+              className="inline-flex items-center gap-2 text-neutral-600 hover:text-neutral-900 mb-4 font-bold uppercase tracking-widest text-xs transition-colors"
             >
-              <div className="text-center">
-                <Upload className="mx-auto mb-2 text-neutral-400" size={32} />
-                <p className="text-sm text-neutral-600">Click to upload</p>
-                <p className="text-xs text-neutral-400 mt-1">Max 5MB</p>
-              </div>
-            </div>
-          )}
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageSelect}
-            className="hidden"
-          />
-        </div>
-
-        {/* Basic Info */}
-        <div className="bg-white rounded-xl p-6 border border-neutral-200">
-          <h2 className="text-lg font-bold text-neutral-900 mb-4">Basic Information</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Name (English) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.nameEn}
-                onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Full name in English"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Name (Arabic) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.nameAr}
-                onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="الاسم الكامل بالعربية"
-                dir="rtl"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Age
-              </label>
-              <input
-                type="number"
-                min="0"
-                max="120"
-                value={formData.age || ''}
-                onChange={(e) => setFormData({ ...formData, age: e.target.value ? parseInt(e.target.value) : undefined })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Age"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Date of Martyrdom *
-              </label>
-              <input
-                type="date"
-                required
-                value={formData.dateOfMartyrdom}
-                onChange={(e) => setFormData({ ...formData, dateOfMartyrdom: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
+              <ArrowLeft size={16} /> BACK TO MARTYRS
+            </Link>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight uppercase text-neutral-900">
+              {isEditing ? 'EDIT RECORD' : 'NEW RECORD'}
+            </h1>
           </div>
         </div>
 
-        {/* Location */}
-        <div className="bg-white rounded-xl p-6 border border-neutral-200">
-          <h2 className="text-lg font-bold text-neutral-900 mb-4">Location</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Location (English) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.locationEn}
-                onChange={(e) => setFormData({ ...formData, locationEn: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="City, Country"
-              />
+        {/* Stepper */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {STEPS.map((step, idx) => (
+            <div
+              key={idx}
+              className={`flex-1 min-w-[120px] pb-4 border-b-4 transition-colors ${
+                idx === currentStep
+                  ? 'border-neutral-900 text-neutral-900'
+                  : idx < currentStep
+                  ? 'border-neutral-500 text-neutral-500'
+                  : 'border-neutral-200 text-neutral-400'
+              }`}
+            >
+              <p className="text-xs font-bold font-mono tracking-widest uppercase mb-1">
+                STEP 0{idx + 1}
+              </p>
+              <p className="font-bold text-sm tracking-wide uppercase line-clamp-1">{step}</p>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Location (Arabic) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.locationAr}
-                onChange={(e) => setFormData({ ...formData, locationAr: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="المدينة، البلد"
-                dir="rtl"
-              />
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Profession */}
-        <div className="bg-white rounded-xl p-6 border border-neutral-200">
-          <h2 className="text-lg font-bold text-neutral-900 mb-4">Profession</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Profession (English) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.professionEn}
-                onChange={(e) => setFormData({ ...formData, professionEn: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Occupation or role"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Profession (Arabic) *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.professionAr}
-                onChange={(e) => setFormData({ ...formData, professionAr: e.target.value })}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="المهنة أو الدور"
-                dir="rtl"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Story */}
-        <div className="bg-white rounded-xl p-6 border border-neutral-200">
-          <h2 className="text-lg font-bold text-neutral-900 mb-4">Their Story</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Story (English) *
-              </label>
-              <textarea
-                required
-                value={formData.storyEn}
-                onChange={(e) => setFormData({ ...formData, storyEn: e.target.value })}
-                rows={8}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                placeholder="Tell their story..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Story (Arabic) *
-              </label>
-              <textarea
-                required
-                value={formData.storyAr}
-                onChange={(e) => setFormData({ ...formData, storyAr: e.target.value })}
-                rows={8}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                placeholder="احكِ قصتهم..."
-                dir="rtl"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={() => navigate('/admin/martyrs')}
-            disabled={isSubmitting}
-            className="px-6 py-3 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-semibold disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex-1 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                {isEditing ? 'Updating...' : 'Creating...'}
-              </>
-            ) : (
-              isEditing ? 'Update Martyr' : 'Create Martyr'
+        <div className="bg-background border-2 border-neutral-300 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)] p-0">
+          <div className="p-8">
+            {currentStep === 0 && (
+              <IdentityStep formData={formData} setFormData={setFormData} />
             )}
-          </button>
+
+            {currentStep === 1 && (
+              <StoryStep formData={formData} setFormData={setFormData} />
+            )}
+
+            {currentStep === 2 && (
+              <MediaStep 
+                imagePreview={imagePreview} 
+                handleImageSelect={handleImageSelect} 
+                handleRemoveImage={handleRemoveImage} 
+              />
+            )}
+
+            {currentStep === 3 && (
+              <ReviewStep formData={formData} imagePreview={imagePreview} />
+            )}
+          </div>
+
+          <div className="bg-neutral-100 border-t-2 border-neutral-300 p-6 flex items-center justify-between">
+            <button
+              onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+              disabled={currentStep === 0 || isSubmitting}
+              className="flex items-center gap-2 px-6 py-3 font-bold uppercase tracking-widest text-sm text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+            >
+              <ArrowLeft size={16} /> Previous
+            </button>
+
+            {currentStep < STEPS.length - 1 ? (
+              <button
+                onClick={handleNext}
+                className="flex items-center gap-2 px-8 py-3 bg-neutral-900 text-white font-bold uppercase tracking-widest text-sm hover:bg-black transition-colors"
+              >
+                Next <ArrowRight size={16} />
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="flex items-center gap-2 px-8 py-3 bg-green-700 text-white font-bold uppercase tracking-widest text-sm hover:bg-green-800 transition-colors border-none disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  'Saving...'
+                ) : (
+                  <>
+                    <Save size={16} /> {isEditing ? 'COMMIT EDITS' : 'PUBLISH RECORD'}
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useMartyrsAdmin, useDeleteMartyr } from './useMartyrsAdmin';
-import { Search, Plus, Edit2, Trash2, Calendar, User, Flame } from 'lucide-react';
-import { format } from 'date-fns';
+import { Search, Plus } from 'lucide-react';
+import { ConfirmModal } from '../../core/components/ConfirmModal';
+import { AdminMartyrCard } from './AdminMartyrCard';
 
 export function MartyrsManagementPage() {
   const navigate = useNavigate();
   const { data: martyrs, isLoading } = useMartyrsAdmin();
   const deleteMutation = useDeleteMartyr();
   const [searchQuery, setSearchQuery] = useState('');
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    martyrId: string | null;
+    martyrName: string | null;
+  }>({ isOpen: false, martyrId: null, martyrName: null });
 
   const filteredMartyrs = martyrs?.filter(m => 
     m.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -16,21 +22,26 @@ export function MartyrsManagementPage() {
     m.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDelete = (id: string, name: string) => {
-    if (confirm(`Delete ${name}? This will also delete all associated memories and cannot be undone.`)) {
-      deleteMutation.mutate(id);
+  const handleDeleteClick = (id: string, name: string) => {
+    setConfirmState({ isOpen: true, martyrId: id, martyrName: name });
+  };
+
+  const handleConfirmDelete = () => {
+    if (confirmState.martyrId) {
+      deleteMutation.mutate(confirmState.martyrId);
     }
+    setConfirmState({ isOpen: false, martyrId: null, martyrName: null });
   };
 
   if (isLoading) {
     return (
-      <div className="p-6 md:p-8">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 w-64 bg-neutral-200 rounded" />
-          <div className="h-12 bg-neutral-200 rounded" />
+      <div className="p-6 md:p-8 min-h-screen bg-background texture-lines">
+        <div className="animate-pulse space-y-6 max-w-7xl mx-auto">
+          <div className="h-10 w-64 bg-neutral-300 border border-neutral-400" />
+          <div className="h-14 bg-neutral-300 border border-neutral-400" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-64 bg-neutral-200 rounded" />
+              <div key={i} className="h-64 bg-neutral-300 border border-neutral-400" />
             ))}
           </div>
         </div>
@@ -39,120 +50,73 @@ export function MartyrsManagementPage() {
   }
 
   return (
-    <div className="p-6 md:p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Martyrs Management</h1>
-            <p className="text-neutral-600">
-              Manage martyr profiles and information
-              <span className="ml-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-semibold">
-                {martyrs?.length || 0} total
-              </span>
+    <div className="p-6 md:p-10 min-h-screen bg-background texture-lines">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight uppercase text-neutral-900 mb-2">Martyrs Management</h1>
+              <p className="text-neutral-600 tracking-wide uppercase text-sm font-medium">
+                Manage profiles
+                <span className="ml-3 bg-neutral-900 text-white px-3 py-1 text-xs font-bold font-mono">
+                  {martyrs?.length || 0} TOTAL
+                </span>
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/admin/martyrs/new')}
+              className="flex items-center justify-center gap-3 bg-neutral-900 text-white px-6 py-3 hover:bg-black transition-colors font-bold uppercase tracking-widest text-sm border-2 border-transparent hover:border-black"
+            >
+              <Plus size={18} />
+              Add Martyr
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={20} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="SEARCH BY NAME OR LOCATION..."
+              className="w-full pl-12 pr-4 py-4 bg-white/50 border-2 border-neutral-300 focus:border-neutral-900 focus:ring-0 transition-colors uppercase tracking-wide text-sm font-medium placeholder-neutral-500"
+            />
+          </div>
+        </div>
+
+        {/* Grid */}
+        {filteredMartyrs && filteredMartyrs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMartyrs.map((martyr) => (
+              <AdminMartyrCard 
+                key={martyr.id} 
+                martyr={martyr} 
+                onEdit={(id) => navigate(`/admin/martyrs/${id}/edit`)}
+                onDelete={handleDeleteClick}
+                isDeleting={deleteMutation.isPending}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="border-2 border-neutral-300 border-dashed p-16 text-center bg-white/30">
+            <p className="text-neutral-500 uppercase tracking-widest font-bold">
+              {searchQuery ? 'NO MARTYRS MATCH YOUR SEARCH.' : 'NO MARTYRS CATALOGED YET.'}
             </p>
           </div>
-          <button
-            onClick={() => navigate('/admin/martyrs/new')}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-semibold"
-          >
-            <Plus size={20} />
-            Add Martyr
-          </button>
-        </div>
-
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by name or location..."
-            className="w-full pl-12 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+        )}
       </div>
 
-      {/* Grid */}
-      {filteredMartyrs && filteredMartyrs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredMartyrs.map((martyr) => (
-            <div
-              key={martyr.id}
-              className="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              {/* Image */}
-              <div className="relative h-48 bg-neutral-100">
-                {martyr.imageUrl ? (
-                  <img
-                    src={martyr.imageUrl}
-                    alt={martyr.nameEn}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <User size={64} className="text-neutral-300" />
-                  </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-neutral-900 mb-1">
-                  {martyr.nameEn || martyr.nameAr}
-                </h3>
-                {martyr.nameAr && (
-                  <p className="text-sm text-neutral-600 mb-3" dir="rtl">
-                    {martyr.nameAr}
-                  </p>
-                )}
-
-                <div className="space-y-2 text-sm text-neutral-600 mb-4">
-                  {martyr.age && (
-                    <div className="flex items-center gap-2">
-                      <User size={14} />
-                      <span>Age {martyr.age}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} />
-                    <span>{format(new Date(martyr.dateOfMartyrdom), 'MMM d, yyyy')}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Flame size={14} />
-                    <span>{martyr.candlesCount} candles lit</span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => navigate(`/admin/martyrs/${martyr.id}/edit`)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors font-medium"
-                  >
-                    <Edit2 size={16} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(martyr.id, martyr.nameEn)}
-                    disabled={deleteMutation.isPending}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors font-medium disabled:opacity-50"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-xl p-12 border border-neutral-200 text-center">
-          <p className="text-neutral-600">
-            {searchQuery ? 'No martyrs found matching your search.' : 'No martyrs yet.'}
-          </p>
-        </div>
-      )}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title="DELETE MARTYR RECORD"
+        description={`Are you sure you want to permanently delete the record for ${confirmState.martyrName || 'this individual'}? This will also eradicate all associated memories and metadata. This action is irreversible.`}
+        confirmLabel="DELETE FOREVER"
+        isDestructive={true}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmState({ isOpen: false, martyrId: null, martyrName: null })}
+      />
     </div>
   );
 }

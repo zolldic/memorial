@@ -9,6 +9,7 @@ import {
   MartyrFormData 
 } from './martyrsService';
 import { toast } from 'sonner';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export function useMartyrsAdmin() {
   return useQuery({
@@ -30,14 +31,19 @@ export function useCreateMartyr() {
 
   return useMutation({
     mutationFn: createMartyr,
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to create martyr');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-martyrs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
       queryClient.invalidateQueries({ queryKey: ['martyrs'] }); // Public cache
       toast.success('Martyr created successfully');
     },
-    onError: () => {
-      toast.error('Failed to create martyr');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to create martyr'));
     },
   });
 }
@@ -47,14 +53,20 @@ export function useUpdateMartyr() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: MartyrFormData }) => updateMartyr(id, data),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to update martyr');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-martyrs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-martyr'] });
       queryClient.invalidateQueries({ queryKey: ['martyrs'] }); // Public cache
+      queryClient.invalidateQueries({ queryKey: ['martyr-detail'] });
       toast.success('Martyr updated successfully');
     },
-    onError: () => {
-      toast.error('Failed to update martyr');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to update martyr'));
     },
   });
 }
@@ -64,14 +76,20 @@ export function useDeleteMartyr() {
 
   return useMutation({
     mutationFn: deleteMartyr,
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to delete martyr');
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['admin-martyrs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
       queryClient.invalidateQueries({ queryKey: ['martyrs'] }); // Public cache
+      queryClient.invalidateQueries({ queryKey: ['martyr-detail'] });
       toast.success('Martyr deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete martyr');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to delete martyr'));
     },
   });
 }
@@ -79,8 +97,8 @@ export function useDeleteMartyr() {
 export function useUploadMartyrImage() {
   return useMutation({
     mutationFn: uploadMartyrImage,
-    onError: () => {
-      toast.error('Failed to upload image');
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to upload image'));
     },
   });
 }

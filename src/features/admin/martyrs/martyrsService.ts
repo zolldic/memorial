@@ -1,4 +1,8 @@
 import { supabase } from '@/lib/supabase';
+import { uploadToStorage } from '@/lib/storage';
+import { cleanupMemoryMediaFiles, type MemoryMediaRow } from '@/lib/storageCleanup';
+import { extractStorageObjectPathFromUrl } from '@/shared/utils/url';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export interface MartyrFormData {
   nameEn: string;
@@ -39,7 +43,8 @@ export async function getMartyrsForAdmin(): Promise<MartyrListItem[]> {
         language,
         name,
         location
-      )
+      ),
+      memories (count)
     `)
     .order('date_of_martyrdom', { ascending: false });
 
@@ -55,7 +60,7 @@ export async function getMartyrsForAdmin(): Promise<MartyrListItem[]> {
       location: translations.find((t: any) => t.language === 'en')?.location || '',
       dateOfMartyrdom: martyr.date_of_martyrdom,
       imageUrl: martyr.image_url,
-      memoriesCount: 0, // TODO: Add count from join
+      memoriesCount: martyr.memories?.[0]?.count || 0,
       candlesCount: martyr.candles || 0,
     };
   });
@@ -108,7 +113,7 @@ export async function createMartyr(formData: MartyrFormData): Promise<{ success:
     const { data: martyr, error: martyrError } = await supabase
       .from('martyrs')
       .insert({
-        age: formData.age || null,
+        age: formData.age ?? 0,
         date_of_martyrdom: formData.dateOfMartyrdom,
         image_url: formData.imageUrl || null,
       })
@@ -146,7 +151,7 @@ export async function createMartyr(formData: MartyrFormData): Promise<{ success:
     return { success: true };
   } catch (err) {
     console.error('Error creating martyr:', err);
-    return { success: false, error: 'Failed to create martyr' };
+    return { success: false, error: getErrorMessage(err, 'Failed to create martyr') };
   }
 }
 
@@ -156,7 +161,7 @@ export async function updateMartyr(id: string, formData: MartyrFormData): Promis
     const { error: martyrError } = await supabase
       .from('martyrs')
       .update({
-        age: formData.age || null,
+        age: formData.age ?? 0,
         date_of_martyrdom: formData.dateOfMartyrdom,
         image_url: formData.imageUrl || null,
       })
@@ -164,43 +169,67 @@ export async function updateMartyr(id: string, formData: MartyrFormData): Promis
 
     if (martyrError) throw martyrError;
 
-    // Update English translation
-    const { error: enError } = await supabase
+    // Upsert both translations by (martyr_id, language)
+    const { error: translationsError } = await supabase
       .from('martyr_translations')
-      .update({
-        name: formData.nameEn,
-        location: formData.locationEn,
-        profession: formData.professionEn,
-        story: formData.storyEn,
-      })
-      .eq('martyr_id', id)
-      .eq('language', 'en');
+      .upsert(
+        [
+          {
+            martyr_id: id,
+            language: 'en',
+            name: formData.nameEn,
+            location: formData.locationEn,
+            profession: formData.professionEn,
+            story: formData.storyEn,
+          },
+          {
+            martyr_id: id,
+            language: 'ar',
+            name: formData.nameAr,
+            location: formData.locationAr,
+            profession: formData.professionAr,
+            story: formData.storyAr,
+          },
+        ],
+        {
+          onConflict: 'martyr_id,language',
+        }
+      );
 
-    if (enError) throw enError;
-
-    // Update Arabic translation
-    const { error: arError } = await supabase
-      .from('martyr_translations')
-      .update({
-        name: formData.nameAr,
-        location: formData.locationAr,
-        profession: formData.professionAr,
-        story: formData.storyAr,
-      })
-      .eq('martyr_id', id)
-      .eq('language', 'ar');
-
-    if (arError) throw arError;
+    if (translationsError) throw translationsError;
 
     return { success: true };
   } catch (err) {
     console.error('Error updating martyr:', err);
-    return { success: false, error: 'Failed to update martyr' };
+    return { success: false, error: getErrorMessage(err, 'Failed to update martyr') };
   }
 }
 
 export async function deleteMartyr(id: string): Promise<{ success: boolean; error?: string }> {
   try {
+    // 1. Delete associated memories storage
+    const { data: memories, error: memoriesError } = await supabase
+      .from('memories')
+      .select('photo_url, photo_urls, audio_url')
+      .eq('martyr_id', id);
+
+    if (memoriesError) throw memoriesError;
+
+    if (memories && memories.length > 0) {
+      await cleanupMemoryMediaFiles(memories as MemoryMediaRow[]);
+    }
+
+    // 2. Delete martyr image from storage
+    const { data: martyr } = await supabase.from('martyrs').select('image_url').eq('id', id).single();
+    if (martyr?.image_url) {
+      const objectPath = extractStorageObjectPathFromUrl(martyr.image_url);
+      if (objectPath) {
+        const { error: removeImageError } = await supabase.storage.from('martyr-images').remove([objectPath]);
+        if (removeImageError) throw removeImageError;
+      }
+    }
+
+    // 3. Delete martyr (cascades to memories and translations)
     const { error } = await supabase
       .from('martyrs')
       .delete()
@@ -210,32 +239,22 @@ export async function deleteMartyr(id: string): Promise<{ success: boolean; erro
     return { success: true };
   } catch (err) {
     console.error('Error deleting martyr:', err);
-    return { success: false, error: 'Failed to delete martyr' };
+    return { success: false, error: getErrorMessage(err, 'Failed to delete martyr') };
   }
 }
 
 export async function uploadMartyrImage(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `${fileName}`;
+    const { url, error } = await uploadToStorage(file, {
+      bucket: 'martyr-images',
+      cacheControl: '3600',
+    });
 
-    const { error: uploadError } = await supabase.storage
-      .from('martyr-images')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
+    if (error || !url) throw error || new Error('Failed to upload image');
 
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage
-      .from('martyr-images')
-      .getPublicUrl(filePath);
-
-    return { success: true, url: data.publicUrl };
+    return { success: true, url };
   } catch (err) {
     console.error('Error uploading image:', err);
-    return { success: false, error: 'Failed to upload image' };
+    return { success: false, error: getErrorMessage(err, 'Failed to upload image') };
   }
 }
