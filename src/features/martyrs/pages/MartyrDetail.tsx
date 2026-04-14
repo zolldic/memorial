@@ -9,13 +9,21 @@ import { TributeWall } from '@/features/martyrs/components/TributeWall';
 import { MemorialSection } from '@/features/martyrs/components/MemorialSection';
 import { toast } from 'sonner';
 import { useDirectionalArrow } from '@/shared/hooks/useArrow';
+import { useEffect } from 'react';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export function MartyrDetail() {
   const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
   const BackArrow = useDirectionalArrow('back');
-  const { martyr, memories, isLoading, isError } = useMartyrDetail();
+  const { martyr, memories, isLoading, isError, error, refetch, isFetching } = useMartyrDetail();
   const { candleLit, optimisticCandles, lightCandle } = useCandleState(martyr?.id);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(getErrorMessage(error, t('martyrPage.recordNotFoundMessage')));
+    }
+  }, [isError, error, t]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -47,7 +55,18 @@ export function MartyrDetail() {
     return (
       <div className="py-28 md:py-32 text-center max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
         <h1 className="text-3xl md:text-4xl font-serif font-bold tracking-tight">{t("martyrPage.recordNotFound")}</h1>
-        <p className="mt-4 text-muted-foreground font-body leading-loose max-w-xl mx-auto">{t("martyrPage.recordNotFoundMessage")}</p>
+        <p className="mt-4 text-muted-foreground font-body leading-loose max-w-xl mx-auto">
+          {getErrorMessage(error, t('martyrPage.recordNotFoundMessage'))}
+        </p>
+        {isError && (
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="mt-6 inline-flex items-center gap-2 border border-border/80 text-foreground px-8 py-4 font-body hover:bg-foreground hover:text-background transition-colors duration-300 ease-out disabled:opacity-60"
+          >
+            {isFetching ? 'Retrying...' : 'Retry'}
+          </button>
+        )}
         <Link
           to="/martyrs"
           className="mt-8 inline-flex items-center gap-2 border border-foreground/80 text-foreground px-8 py-4 font-body hover:bg-foreground hover:text-background transition-colors duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
@@ -80,13 +99,6 @@ export function MartyrDetail() {
             <Share2 size={14} strokeWidth={1.5} aria-hidden="true" />
             <span>{t('martyrPage.shareProfile', { defaultValue: 'Share' })}</span>
           </button>
-{/*           <button
-            onClick={() => window.print()}
-            aria-label={t('martyrPage.printProfile', { defaultValue: 'Print this profile' })}
-            className="p-2 min-w-[44px] min-h-[44px] border-2 border-border hover:bg-foreground hover:text-background transition-colors duration-500 ease-out focus-visible:outline focus-visible:outline-3 focus-visible:outline-ring focus-visible:outline-offset-3"
-          >
-            <Printer size={16} strokeWidth={1.5} aria-hidden="true" />
-          </button> */}
         </div>
       </div>
 

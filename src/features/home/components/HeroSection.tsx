@@ -5,16 +5,17 @@ import { useTranslation } from 'react-i18next';
 
 interface HeroSectionProps {
   ArrowIcon: LucideIcon;
+  martyrImages: string[];
 }
 
-export function HeroSection({  ArrowIcon }: HeroSectionProps) {
+export function HeroSection({ ArrowIcon, martyrImages }: HeroSectionProps) {
   const { t } = useTranslation("home");
 
   return (
     <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden border-b border-border/40">
       {/* Background — Animated Archive Portraits */}
       <div className="absolute inset-0 z-0">
-        <AnimatedBackground absolute />
+        <AnimatedBackground absolute images={martyrImages} />
         {/* Dark overlay to ensure white text readability over the light-themed animated background */}
         <div className="absolute inset-0 bg-foreground/55 mix-blend-multiply" />
       </div>

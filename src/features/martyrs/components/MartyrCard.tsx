@@ -3,11 +3,10 @@ import { Martyr, Language } from '@/shared/types';
 
 interface MartyrCardProps {
   martyr: Martyr;
-  idx: number;
   lang: Language;
 }
 
-export function MartyrCard({ martyr, idx, lang }: MartyrCardProps) {
+export function MartyrCard({ martyr, lang }: MartyrCardProps) {
   return (
     <Link
       to={`/martyrs/${martyr.id}`}

@@ -48,19 +48,3 @@ export const SUDAN_STATES: {
   { labelEn: "East Darfur",      labelAr: "شرق دارفور",      value: "east-darfur",     keywords: ["ed daein", "east darfur"] },
   { labelEn: "Central Darfur",   labelAr: "وسط دارفور",      value: "central-darfur",  keywords: ["zalingei", "central darfur"] },
 ];
-
-export const CITY_CHIPS = [
-  { labelEn: "Khartoum", labelAr: "الخرطوم", q: "Khartoum" },
-  { labelEn: "Omdurman", labelAr: "أم درمان", q: "Omdurman" },
-  { labelEn: "Atbara",   labelAr: "عطبرة",    q: "Atbara"   },
-  { labelEn: "Bahri",    labelAr: "بحري",      q: "Bahri"    },
-  { labelEn: "El-Obeid", labelAr: "الأبيض",   q: "El-Obeid" },
-];
-
-export const HOME_YEAR_CHIPS = [
-  { label: "2018", q: "2018" },
-  { label: "2019", q: "2019" },
-  { label: "2021", q: "2021" },
-  { label: "2022", q: "2022" },
-];
-

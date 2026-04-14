@@ -6,32 +6,25 @@ export function useMartyrDetail() {
   const { id } = useParams<{ id: string }>();
 
   const {
-    data: martyr,
-    isLoading: isMartyrLoading,
-    isError: isMartyrError,
-    error: martyrError,
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
   } = useQuery({
-    queryKey: ["martyr", id],
-    queryFn: () => martyrService.getMartyrById(id),
-    enabled: !!id,
-  });
-
-  const {
-    data: memories = [],
-    isLoading: isMemoriesLoading,
-    isError: isMemoriesError,
-    error: memoriesError,
-  } = useQuery({
-    queryKey: ["memories", id],
-    queryFn: () => martyrService.getMemoriesByMartyrId(id),
+    queryKey: ["martyr-detail", id],
+    queryFn: () => martyrService.getMartyrDetail(id),
     enabled: !!id,
   });
 
   return {
-    martyr,
-    memories,
-    isLoading: isMartyrLoading || isMemoriesLoading,
-    isError: isMartyrError || isMemoriesError,
-    error: martyrError || memoriesError,
+    martyr: data?.martyr ?? null,
+    memories: data?.memories ?? [],
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
   };
 }

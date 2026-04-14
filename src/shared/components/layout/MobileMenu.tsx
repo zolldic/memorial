@@ -14,7 +14,7 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isOpen, onClose, lang, toggleLang }: MobileMenuProps) {
-  const { t } = useTranslation(["common", "home"]);
+  const { t } = useTranslation("common");
   const isRtl = lang === "ar";
 
   // Close on Escape key

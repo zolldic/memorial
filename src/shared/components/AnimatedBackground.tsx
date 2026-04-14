@@ -1,5 +1,3 @@
-import { martyrsData } from "@/shared/data/martyrs";
-
 interface ColumnConfig {
   speed: number;
   delay: number;
@@ -7,10 +5,11 @@ interface ColumnConfig {
 
 interface AnimatedBackgroundProps {
   absolute?: boolean;
+  images?: string[];
 }
 
-export function AnimatedBackground({ absolute = false }: AnimatedBackgroundProps) {
-  const allPosters = martyrsData.map(m => m.image);
+export function AnimatedBackground({ absolute = false, images = [] }: AnimatedBackgroundProps) {
+  const allPosters = images;
   // Reduce from 3x to 2x duplication for better memory usage
   const extendedPosters = [...allPosters, ...allPosters];
 

@@ -6,7 +6,9 @@ export function useMartyrs() {
     data: martyrs = [], 
     isLoading, 
     isError, 
-    error 
+    error,
+    refetch,
+    isFetching,
   } = useQuery({
     queryKey: ["martyrs", "list"],
     queryFn: () => martyrService.getMartyrs(),
@@ -17,5 +19,7 @@ export function useMartyrs() {
     isLoading,
     isError,
     error,
+    refetch,
+    isFetching,
   };
 }

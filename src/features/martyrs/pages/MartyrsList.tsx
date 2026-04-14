@@ -6,16 +6,25 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { FilterBar } from '@/features/martyrs/components/FilterBar';
 import { MartyrCard } from '@/features/martyrs/components/MartyrCard';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export function MartyrsList() {
   const { lang } = useLanguage();
   const { t } = useTranslation('dashboard');
   
   // Use React Query fetched data instead of local static import
-  const { martyrs, isLoading, isError } = useMartyrs();
+  const { martyrs, isLoading, isError, error, refetch, isFetching } = useMartyrs();
   
   // Pass fetched data straight to our custom derived-state hook!
   const { filteredMartyrs, filters, setSearchQuery, setYearFilter, setMonthFilter, setStateFilter, clearFilters, hasFilters } = useMartyrFilters(martyrs);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(getErrorMessage(error, t('martyrsList.loadingError')));
+    }
+  }, [isError, error, t]);
 
   return (
     <div className="py-16 md:py-24 lg:py-32 flex flex-col gap-0 max-w-6xl mx-auto px-6 md:px-8 lg:px-12">
@@ -53,17 +62,26 @@ export function MartyrsList() {
              </p>
            </div>
         ) : isError ? (
-          <div className="text-center py-28 border border-border/70 bg-muted/20 text-foreground">
-            <p className="font-mono uppercase tracking-widest">{t("martyrsList.loadingError")}</p>
+          <div className="text-center py-20 border border-border/70 bg-muted/20 text-foreground px-6">
+            <p className="font-mono uppercase tracking-widest mb-3">{t("martyrsList.loadingError")}</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              {getErrorMessage(error, t('martyrsList.loadingError'))}
+            </p>
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="px-6 py-3 border border-border/70 font-mono text-xs uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors disabled:opacity-60"
+            >
+              {isFetching ? 'Retrying...' : 'Retry'}
+            </button>
           </div>
         ) : filteredMartyrs.length > 0 ? (
           <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 600: 2, 900: 3 }}>
             <Masonry gutter="0px">
-              {filteredMartyrs.map((martyr, idx) => (
+              {filteredMartyrs.map((martyr) => (
                 <MartyrCard 
                   key={martyr.id} 
                   martyr={martyr} 
-                  idx={idx} 
                   lang={lang} 
                 />
               ))}

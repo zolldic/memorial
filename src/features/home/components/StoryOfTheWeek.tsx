@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { LucideIcon, MapPin, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Martyr, Language } from '@/shared/types';
+import { truncateToWords } from '@/shared/utils/text';
 
 interface StoryOfTheWeekProps {
   lang: Language;
@@ -9,11 +10,7 @@ interface StoryOfTheWeekProps {
   ArrowIcon: LucideIcon;
 }
 
-function truncateToWords(text: string, maxWords: number): string {
-  const words = text.trim().split(/\s+/);
-  if (words.length <= maxWords) return text;
-  return `${words.slice(0, maxWords).join(" ")} ... `;
-}
+
 
 export function StoryOfTheWeek({ lang, featuredMartyr, ArrowIcon }: StoryOfTheWeekProps) {
   const { t } = useTranslation("home");

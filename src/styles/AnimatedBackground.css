@@ -49,11 +49,4 @@
 /* Mobile: 4 columns, tight spacing */
 @media (max-width: 767px) {
   .poster-item { margin-bottom: 0.5rem; }
-  
-  .column-0,
-  .column-1,
-  .column-2,
-  .column-3 { 
-    animation-duration: 1.33x; /* 33% slower on mobile */
-  }
 }

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { martyrsData } from '@/shared/data/martyrs';
+import { useMartyrs } from '@/features/martyrs/hooks/useMartyrs';
 import { useMartyrSearch } from '@/shared/hooks/useMartyrSearch';
 import { memoryService } from '@/features/memories/services/memoryService';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ type Relationship = "family" | "friend" | "stranger";
 
 export function useShareMemoryForm() {
   const { t } = useTranslation('dashboard');
+  const { martyrs } = useMartyrs();
   const [step, setStep] = useState(1);
   const [selectedMartyrId, setSelectedMartyrId] = useState<string | null>(null);
   const [memoryType, setMemoryType] = useState<MemoryType>("story");
@@ -22,13 +23,13 @@ export function useShareMemoryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { searchQuery, setSearchQuery, filteredMartyrs } = useMartyrSearch({
-    martyrs: martyrsData,
+    martyrs,
     returnEmptyWhenNoQuery: true
   });
 
   const selectedMartyr = useMemo(() => 
-    martyrsData.find((m) => m.id === selectedMartyrId), 
-  [selectedMartyrId]);
+    martyrs.find((m) => m.id === selectedMartyrId), 
+  [martyrs, selectedMartyrId]);
 
   const canSubmit = useMemo(() => {
     if (!selectedMartyrId) return false;

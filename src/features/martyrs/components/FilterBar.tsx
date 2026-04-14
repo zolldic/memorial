@@ -3,6 +3,7 @@ import { Search, X } from 'lucide-react';
 import { useLanguage } from '@/app/providers/LanguageProvider';
 import { YEARS, MONTHS, SUDAN_STATES } from '@/shared/utils/filters';
 import { useTranslation } from 'react-i18next';
+import { localized } from '@/shared/utils/localized';
 
 interface FilterBarProps {
   searchQuery: string;
@@ -103,7 +104,7 @@ export function FilterBar({
             >
               {YEARS.map((y) => (
                 <option key={y.value} value={y.value}>
-                  {lang === "en" ? y.labelEn : y.labelAr}
+                  {localized(y, lang)}
                 </option>
               ))}
             </select>
@@ -116,7 +117,7 @@ export function FilterBar({
             >
               {MONTHS.map((m) => (
                 <option key={m.value} value={m.value}>
-                  {lang === "en" ? m.labelEn : m.labelAr}
+                  {localized(m, lang)}
                 </option>
               ))}
             </select>
@@ -129,7 +130,7 @@ export function FilterBar({
             >
               {SUDAN_STATES.map((s) => (
                 <option key={s.value} value={s.value}>
-                  {lang === "en" ? s.labelEn : s.labelAr}
+                  {localized(s, lang)}
                 </option>
               ))}
             </select>
