@@ -1,6 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { frontendToDbMemory } from "@/lib/adapters/memoryAdapter";
 import { Memory } from "@/shared/types";
+import { withRetry } from "@/shared/utils/retry";
+import { uploadToStorage } from "@/lib/storage";
+import { getErrorMessage } from '@/shared/utils/supabaseError';
 
 export interface SubmitMemoryParams {
   martyrId: string;
@@ -46,29 +49,19 @@ export const memoryService = {
         approved: false,
       } as Partial<Memory>);
 
-      const insertMemoryWithRetry = async (retries = 2) => {
-        let lastError: unknown;
-        for (let attempt = 0; attempt <= retries; attempt += 1) {
-          const { data, error } = await supabase
-            .from('memories')
-            .insert(dbData.memory)
-            .select()
-            .single();
-          if (!error) return { data, error: null };
-          lastError = error;
-          if (attempt < retries) {
-            await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
-          }
-        }
-        return { data: null, error: lastError as { message?: string } };
-      };
-
       // Insert memory
-      const { data: memoryData, error: memoryError } = await insertMemoryWithRetry();
+      const { data: memoryData, error: memoryError } = await withRetry(async () => {
+        const { data, error } = await supabase
+          .from('memories')
+          .insert(dbData.memory)
+          .select()
+          .single();
+        if (error) throw error;
+        return { data, error: null };
+      }, 2, 500);
 
-      if (memoryError) {
-        console.error('Error inserting memory:', memoryError);
-        return { success: false, error: memoryError.message };
+      if (!memoryData) {
+        return { success: false, error: getErrorMessage(memoryError, 'Failed to insert memory') };
       }
 
       // Insert translations
@@ -78,24 +71,14 @@ export const memoryService = {
       }));
 
       if (translationsToInsert.length > 0) {
-        const insertTranslationsWithRetry = async (retries = 1) => {
-          let lastError: unknown;
-          for (let attempt = 0; attempt <= retries; attempt += 1) {
+        try {
+          await withRetry(async () => {
             const { error } = await supabase
               .from('memory_translations')
               .insert(translationsToInsert);
-            if (!error) return null;
-            lastError = error;
-            if (attempt < retries) {
-              await new Promise((resolve) => setTimeout(resolve, 400));
-            }
-          }
-          return lastError as { message?: string };
-        };
-
-        const translationError = await insertTranslationsWithRetry();
-
-        if (translationError) {
+            if (error) throw error;
+          }, 1, 400);
+        } catch (translationError) {
           console.error('Error inserting translations:', translationError);
           // Memory was inserted but translations failed - still return success
           // Admin can add translations later
@@ -105,7 +88,7 @@ export const memoryService = {
       return { success: true };
     } catch (err) {
       console.error('Unexpected error submitting memory:', err);
-      return { success: false, error: 'An unexpected error occurred' };
+      return { success: false, error: getErrorMessage(err, 'An unexpected error occurred') };
     }
   },
 
@@ -113,63 +96,23 @@ export const memoryService = {
    * Upload a photo to Supabase Storage
    */
   uploadPhoto: async (file: File, martyrId: string): Promise<{ url?: string; error?: string }> => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${martyrId}/${Date.now()}.${fileExt}`;
-
-      const { data, error } = await supabase.storage
-        .from('memory-photos')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error('Error uploading photo:', error);
-        return { error: error.message };
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('memory-photos')
-        .getPublicUrl(data.path);
-
-      return { url: publicUrl };
-    } catch (err) {
-      console.error('Unexpected error uploading photo:', err);
-      return { error: 'An unexpected error occurred' };
-    }
+    const { url, error } = await uploadToStorage(file, {
+      bucket: 'memory-photos',
+      prefix: martyrId
+    });
+    return { url, error: error?.message };
   },
 
   /**
    * Upload audio to Supabase Storage
    */
   uploadAudio: async (blob: Blob, martyrId: string): Promise<{ url?: string; error?: string }> => {
-    try {
-      const fileName = `${martyrId}/${Date.now()}.webm`;
-
-      const { data, error } = await supabase.storage
-        .from('memory-audio')
-        .upload(fileName, blob, {
-          cacheControl: '3600',
-          upsert: false,
-          contentType: 'audio/webm'
-        });
-
-      if (error) {
-        console.error('Error uploading audio:', error);
-        return { error: error.message };
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('memory-audio')
-        .getPublicUrl(data.path);
-
-      return { url: publicUrl };
-    } catch (err) {
-      console.error('Unexpected error uploading audio:', err);
-      return { error: 'An unexpected error occurred' };
-    }
+    const { url, error } = await uploadToStorage(blob, {
+      bucket: 'memory-audio',
+      prefix: martyrId,
+      extension: 'webm',
+      contentType: 'audio/webm'
+    });
+    return { url, error: error?.message };
   },
 };

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { uploadToStorage } from '@/lib/storage';
 
 interface UploadResult {
   success: boolean;
@@ -27,33 +27,22 @@ export function usePhotoUpload() {
     setProgress(0);
 
     try {
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = fileName;
-
       // Simulate progress (Supabase doesn't provide real progress)
       const progressInterval = setInterval(() => {
         setProgress(prev => Math.min(prev + 10, 90));
       }, 100);
 
-      const { error: uploadError } = await supabase.storage
-        .from('memory-photos')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+      const { url, error } = await uploadToStorage(file, {
+        bucket: 'memory-photos',
+        cacheControl: '3600',
+      });
 
       clearInterval(progressInterval);
       setProgress(100);
 
-      if (uploadError) throw uploadError;
+      if (error || !url) throw error || new Error('Upload failed');
 
-      const { data } = supabase.storage
-        .from('memory-photos')
-        .getPublicUrl(filePath);
-
-      return { success: true, url: data.publicUrl };
+      return { success: true, url };
     } catch (err) {
       console.error('Error uploading photo:', err);
       return { success: false, error: 'upload-failed' };

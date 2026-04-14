@@ -1,7 +1,7 @@
 import { useAudioRecorder } from './useAudioRecorder';
 import { Mic, Square, Play, Pause, RotateCcw, Upload } from 'lucide-react';
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { uploadToStorage } from '@/lib/storage';
 import { useTranslation } from 'react-i18next';
 
 interface AudioRecorderProps {
@@ -42,22 +42,19 @@ export function AudioRecorder({ onAudioUploaded, onAudioRemoved }: AudioRecorder
 
     try {
       const fileExt = audioBlob.type.includes('webm') ? 'webm' : 'mp4';
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('memory-audio')
-        .upload(fileName, audioBlob, {
-          cacheControl: '3600',
-          upsert: false,
-        });
 
-      if (uploadError) throw uploadError;
+      const { url, error } = await uploadToStorage(audioBlob, {
+        bucket: 'memory-audio',
+        extension: fileExt,
+        contentType: audioBlob.type || undefined,
+        cacheControl: '3600',
+      });
 
-      const { data } = supabase.storage
-        .from('memory-audio')
-        .getPublicUrl(fileName);
+      if (error || !url) {
+        throw error || new Error('Upload failed');
+      }
 
-      onAudioUploaded(data.publicUrl);
+      onAudioUploaded(url);
     } catch (err) {
       console.error('Error uploading audio:', err);
       setUploadError(t('shareMemory.audioUploadFailed', { defaultValue: 'Failed to upload audio. Please try again.' }));
