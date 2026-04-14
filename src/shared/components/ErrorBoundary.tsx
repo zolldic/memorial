@@ -24,6 +24,27 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
+  private resetBoundary = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  private getFriendlyMessage(error: Error | null): string {
+    if (!error) {
+      return 'We encountered an unexpected error. Please refresh the page to continue.';
+    }
+
+    const message = error.message.toLowerCase();
+    if (message.includes('loading chunk') || message.includes('failed to fetch dynamically imported module')) {
+      return 'A new version is available or a module failed to load. Refresh to continue.';
+    }
+
+    if (message.includes('network') || message.includes('failed to fetch')) {
+      return 'A network error interrupted the page. Check your connection and try again.';
+    }
+
+    return 'We encountered an unexpected error. Please refresh the page to continue.';
+  }
+
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
@@ -38,15 +59,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 Something went wrong
               </h1>
               <p className="font-body text-lg text-muted-foreground mb-8">
-                We encountered an unexpected error. Please refresh the page to continue.
+                {this.getFriendlyMessage(this.state.error)}
               </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-foreground text-background px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring transition-colors"
-              >
-                Refresh Page
-              </button>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  onClick={this.resetBoundary}
+                  className="border border-border px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-muted transition-colors"
+                >
+                  Try Again
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-foreground text-background px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-background hover:text-foreground hover:outline hover:outline-2 hover:outline-ring transition-colors"
+                >
+                  Refresh Page
+                </button>
+              </div>
+              {import.meta.env.DEV && this.state.error && (
                 <details className="mt-8 text-left">
                   <summary className="font-mono text-xs uppercase tracking-widest cursor-pointer mb-4">
                     Error Details (Development Only)
