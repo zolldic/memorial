@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 interface AdminProfile {
   id: string;
   email: string;
-  role: string;
+  role: string | null;
 }
 
 interface AuthContextType {
@@ -26,64 +26,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchProfile = async (userId: string): Promise<AdminProfile | null> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, email, role')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
-      } else {
+    let isActive = true;
+
+    const syncAuthState = async (nextSession: Session | null) => {
+      if (!isActive) return;
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (!nextSession?.user) {
+        setProfile(null);
         setLoading(false);
+        return;
       }
-    });
+
+      try {
+        const nextProfile = await fetchProfile(nextSession.user.id);
+        if (!isActive) return;
+        setProfile(nextProfile);
+      } catch (err) {
+        console.error('Error loading profile:', err);
+        if (!isActive) return;
+        setProfile(null);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    const initializeAuth = async () => {
+      setLoading(true);
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error('Error getting session:', error);
+      }
+
+      await syncAuthState(session);
+    };
+
+    void initializeAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      void syncAuthState(nextSession);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isActive = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  const loadProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, email, role')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      setProfile(data);
-    } catch (err) {
-      console.error('Error loading profile:', err);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         return { success: false, error: error.message };
-      }
-
-      if (data.user) {
-        await loadProfile(data.user.id);
       }
 
       return { success: true };

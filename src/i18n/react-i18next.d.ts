@@ -1,6 +1,7 @@
 import "i18next";
 
 import about from "./en/about.json";
+import auth from "./en/auth.json";
 import common from "./en/common.json";
 import contribute from "./en/contribute.json";
 import dashboard from "./en/dashboard.json";
@@ -15,6 +16,7 @@ declare module "i18next" {
     defaultNS: "common";
     resources: {
       about: typeof about;
+      auth: typeof auth;
       common: typeof common;
       contribute: typeof contribute;
       dashboard: typeof dashboard;

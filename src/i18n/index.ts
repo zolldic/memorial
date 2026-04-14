@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 export const supportedLanguages = ["en", "ar"] as const;
 export const namespaces = [
   "about",
+  "auth",
   "common",
   "contribute",
   "dashboard",

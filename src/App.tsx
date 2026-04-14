@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/app/providers/LanguageProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { AuthProvider } from "@/features/admin/auth/AuthContext";
+import { Toaster } from "sonner";
 import "@/i18n";
 
 const queryClient = new QueryClient({
@@ -24,6 +25,7 @@ export default function App() {
         <AuthProvider>
           <LanguageProvider>
             <RouterProvider router={router} />
+            <Toaster richColors position="top-right" />
           </LanguageProvider>
         </AuthProvider>
       </QueryClientProvider>
